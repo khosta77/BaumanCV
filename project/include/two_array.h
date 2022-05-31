@@ -13,12 +13,13 @@ namespace TwoDimensionalArray {
      * Array - Класс двумерного массив через одномерный, чтобы было проще работать с матрицами.
      * */
     class Array {
-    private:
+    public:
         double *matrix;   /* Основной массив - он же матрица, т.к. двумерный */
         size_t cols;      /* Колонки */
         size_t rows;      /* Строки */
     public:
         //// Constructor/destructor
+
         /** \Array конструтор выделяющий память под массив
          * \rows - строки
          * \cols - колонки
@@ -38,6 +39,7 @@ namespace TwoDimensionalArray {
         ~Array();
 
         // Basic operations
+
         /** \getRows - получить колличество строк
          * \return - вернет rows
          * */
