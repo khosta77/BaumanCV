@@ -1,0 +1,8 @@
+//
+// Created by stepan on 31.05.22.
+//
+
+#ifndef CVRANGEFINDER_CORRELATION_H
+#define CVRANGEFINDER_CORRELATION_H
+
+#endif //CVRANGEFINDER_CORRELATION_H

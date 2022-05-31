@@ -8,6 +8,11 @@
 using namespace TwoDimensionalArray;
 using namespace cv;
 
+
+/** пространство перевода картинки с RGB в серый
+ * \img - картинка класс Mac
+ * \row и  \col - координаты
+ * */
 namespace grey {
 
 #define Rcof 0.2126
@@ -27,6 +32,8 @@ public:
     CV_Array(const Mat& img);
 };
 
+/** Конструктор перевода картинки в двумерный массив серого
+ * */
 CV_Array::CV_Array(const Mat& img) {
     if (!img.data) {
         throw std::exception();
@@ -39,6 +46,6 @@ CV_Array::CV_Array(const Mat& img) {
             this->matrix[j + i * this->cols] = grey::get_grey(img, i, j);
         }
     }
-}
+};
 
 #endif // CVRANGEFINDER_CV_TWO_ARRAY_H_
