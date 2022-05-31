@@ -1,0 +1,8 @@
+//
+// Created by stepan on 31.05.22.
+//
+
+#ifndef CVRANGEFINDER_CV_TWO_ARRAY_H
+#define CVRANGEFINDER_CV_TWO_ARRAY_H
+
+#endif //CVRANGEFINDER_CV_TWO_ARRAY_H
