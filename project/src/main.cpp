@@ -1,23 +1,23 @@
 #include <iostream>
 #include "../include/CV_two_array.h"
-#include <fstream>
+#include "../include/correlation.h"
+#include "utils.cpp"
 
 using namespace std;
 
-int main(int argc, char** argv ) {
-    if ( argc != 2 ) {
-        cout << "usage: DisplayImage.out <Image_Path>\n";
-        return -1;
-    }
-    CV_Array A(imread(argv[1], 1));
-    ofstream fout;
-    fout.open("data.txt");
-    for (size_t i = 0; i < A.getRows(); i++) {
-        for (size_t j = 0; j < A.getCols(); j++) {
-            fout << setw(4) << A(i, j);
+int main(int argc, const char** argv) {
+    switch (argc) {
+        case 1: {
+            test();
+            break;
         }
-        fout << endl;
+        case 3: {
+            CV_Array X(imread(argv[1], 1));
+            CV_Array Y(imread(argv[2], 1));
+            correlation::coefficient_Pearson cof(X, Y);
+            cout << cof.get_coefficient() << endl;
+            break;
+        }
     }
-    fout.close();
     return 0;
 }
