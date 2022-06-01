@@ -2,6 +2,8 @@
 #define CVRANGEFINDER_CORRELATION_H_
 
 #include "CV_two_array.h"
+#include <cmath>
+
 
 namespace correlation {
     class coefficient_Pearson {
