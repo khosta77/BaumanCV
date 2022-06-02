@@ -4,6 +4,8 @@
 #include "two_array.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <stdlib.h>     // подключаем qsort
+#include <iostream>
 
 using namespace TwoDimensionalArray;
 using namespace cv;
@@ -29,11 +31,13 @@ namespace grey {
 
 class CV_Array : public Array {
 public:
+    /** Конструктор перевода картинки в двумерный массив серого
+     * */
     CV_Array(const Mat& img);
+
+//    void sort();
 };
 
-/** Конструктор перевода картинки в двумерный массив серого
- * */
 CV_Array::CV_Array(const Mat& img) {
     if (!img.data) {
         throw std::exception();
@@ -47,5 +51,14 @@ CV_Array::CV_Array(const Mat& img) {
         }
     }
 };
+
+////функция для сортировки по убыванию
+//static int comp2 (const void * a, const void * b) {
+//    return ( *(int *)b - *(int *)a );
+//}
+//
+//void CV_Array::sort() {
+//    std::qsort (this->matrix, this->rows * this->cols, sizeof(int), comp2);
+//}
 
 #endif // CVRANGEFINDER_CV_TWO_ARRAY_H_
