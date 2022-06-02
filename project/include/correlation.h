@@ -3,6 +3,7 @@
 
 #include "CV_two_array.h"
 #include <cmath>
+#include <iostream>
 
 
 namespace correlation {
@@ -78,29 +79,59 @@ namespace correlation {
         }
     };
 
+
+    /* НЕ РАБОТАЕТ КАК НАДО
+     *По формуле как понятно, надо выбрать ранк элементов, но правильность его вычесления вызывает вопросы.
+     *Не понял как ранк вычислить - если коротко. Получается мы работает с массивом...
+     *Не не могу словами сказать.
+     * */
     class coefficient_Spearman {
     public:
-        /** \coefficient_Spearman - Конструктор, вычисляет коэффицент Спирмена
+        /** \coefficient_Spearman - Конструктор, вычисляет коэффицент ранговой корреляции Спирмена
          * \M - матрица с картинкой1
          * \N - матрица с картинкой2
          * */
-        coefficient_Spearman() {
+        coefficient_Spearman(const CV_Array &M, const CV_Array &N) {
             if ((M.getCols() != N.getCols()) && (M.getRows() != N.getRows())) {
                 throw std::exception();
             }
-
+            double sd = sum_of_differences(M, N);
+            int n = (M.getRows() * M.getCols());
+            double zn = pow(n, 3) - n;
+            std::cout << sd << " " << n << " " << zn << std::endl;
+            this->rs = (1 - ((6*sd)/zn));
         }
 
         /** \get_coefficient - Возращает коэффицент Спирмена
          * */
         double get_coefficient() {
-            return this->r;
+            return this->rs;
         }
     private:
-        double r = 0;  // Коэффициент Спирмена
+        double rs = 0;  // Коэффициент Спирмена
 
+        /** \sum_of_differences - числитель в формуле Спримена
+         * \M - матрица с картинкой1
+         * \N - матрица с картинкой2
+         * \return - числитель в формуле Спримена
+         * */
+        double sum_of_differences(const CV_Array &M, const CV_Array &N) {
+            double sd = 0;
+            for (size_t i = 0; i < M.getRows(); i++) {
+                for (size_t j = 0; j < M.getCols(); j++) {
+                    sd += pow((M(i, j) - N(i, j)), 2);
+                }
+            }
+            return sd;
+        }
 
     };
+
+// Не уверен стоит ли их добоовлять но пусть будут. Правда они по логике такие же, вплане ранжирования.
+//    Это точно то?
+    // Коэффицент ранговой корреляции Кендалла
+
+    // Коэффицент ранговой корреляции Гудмена-Краскела
 };
 
 #endif //CVRANGEFINDER_CORRELATION_H_
