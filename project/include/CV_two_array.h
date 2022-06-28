@@ -23,7 +23,7 @@ private:
      * \img - картинка класс Mac
      * \row и  \col - координаты
      * */
-    static int get_grey(const Mat &img, size_t row, size_t col) {
+    int get_grey(const Mat &img, size_t row, size_t col) {
         return Rcof * img.at<Vec3b>(row, col)[0] + Gcof * img.at<Vec3b>(row, col)[1] +
                Bcof * img.at<Vec3b>(row, col)[2];
     }
