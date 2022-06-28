@@ -13,7 +13,7 @@ namespace TwoDimensionalArray {
      * Array - Класс двумерного массив через одномерный, чтобы было проще работать с матрицами.
      * */
     class Array {
-    public:
+    protected:
         double *matrix;   /* Основной массив - он же матрица, т.к. двумерный */
         size_t cols;      /* Колонки */
         size_t rows;      /* Строки */
