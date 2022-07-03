@@ -1,12 +1,52 @@
 #!/bin/bash
 
+cmake -build .
 make
-./main
 
-gnuplot -persist <<-EOFMarker#
-    set xlabel "picture №"
-    set ylabel "r"
-    set title "Graph correlation"
-    set grid
-    plot "test_Pirson_data.txt" using 1:2 with lines title "coefficient Pearson"
-EOFMarker#
+# Тест №1
+# Две одинаковые картинки
+echo "Tест №1"
+res1=$(./main ./test_img/test_1.jpg ./test_img/test_1.jpg)
+
+if [[ "$res1" == "1" ]]; then
+    echo "    Коэффицент равен 1. Result = $res1"
+elif [[ "$res1" > "0.9" ]]; then
+    echo "    Коэффицент близок к 1. Result = $res1"
+else
+    echo "    Коэффицент не близок к 1. Result = $res1"
+fi
+
+# Тест №2
+# Две разные картинки
+echo -e "Tест №2"
+
+res2=$(./main ./test_img/test_2.jpg ./test_img/test_1.jpg)
+
+if [[ "$res2" == "0" ]]; then
+    echo "    Коэффицент равен 0. Result = $res2"
+elif [[ "$res2" > "0" && "$res2" < "0.3" ]]; then
+    echo "    Коэффицент близок к 0. Result = $res2"
+else
+    echo "    Коэффицент не близок к 0. Result = $res2"
+fi
+
+
+# Тест №3
+# Один предмет с разных ракурсов
+echo -e "Tест №3"
+
+res31=$(./main ./test_img/test_3_1_1.jpg ./test_img/test_3_1_2.jpg)
+
+if [[ "$res31" > "0.5" ]]; then
+    echo "    Коэффицент приближен к реальному значению. Result = $res31"
+else
+    echo "    Коэффицент далек от правды. Result = $res31"
+fi
+
+res32=$(./main ./test_img/test_3_2_1.jpg ./test_img/test_3_2_2.jpg)
+
+if [[ "$res32" > "0.5" ]]; then
+    echo "    Коэффицент приближен к реальному значению. Result = $res32"
+else
+    echo "    Коэффицент далек от правды. Result = $res32"
+fi
