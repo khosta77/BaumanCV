@@ -43,18 +43,42 @@
 #ifndef _GRFMT_BASE_H_
 #define _GRFMT_BASE_H_
 
-#include "utils.hpp"
-#include "bitstrm.hpp"
-#include "exif.hpp"
+//#include "utils.h"
+//#include "bitstrm.hpp"
+//#include "exif.hpp"
+#include <iostream>
+#include <string>
+#include <vector>
+#include "ptr.h"
+#include "Mat.h"
 
 namespace cv
 {
+    struct ExifEntry_t
+    {
+        ExifEntry_t();
+
+        std::vector<u_rational_t> field_u_rational; ///< vector of rational fields
+        std::string field_str;                      ///< any kind of textual information
+
+        float  field_float;                         ///< Currently is not used
+        double field_double;                        ///< Currently is not used
+
+        uint32_t field_u32;                         ///< Unsigned 32-bit value
+        int32_t  field_s32;                         ///< Signed 32-bit value
+
+        uint16_t tag;                               ///< Tag number
+
+        uint16_t field_u16;                         ///< Unsigned 16-bit value
+        int16_t  field_s16;                         ///< Signed 16-bit value
+        uint8_t  field_u8;                          ///< Unsigned 8-bit value
+        int8_t   field_s8;                          ///< Signed 8-bit value
+    };
 
 class BaseImageDecoder;
-class BaseImageEncoder;
-typedef Ptr<BaseImageEncoder> ImageEncoder;
+//class BaseImageEncoder;
+//typedef Ptr<BaseImageEncoder> ImageEncoder;
 typedef Ptr<BaseImageDecoder> ImageDecoder;
-
 ///////////////////////////////// base class for decoders ////////////////////////
 class BaseImageDecoder
 {
@@ -89,37 +113,37 @@ protected:
     String m_signature;
     Mat m_buf;
     bool m_buf_supported;
-    ExifReader m_exif;
+//    ExifReader m_exif;
 };
 
 
 ///////////////////////////// base class for encoders ////////////////////////////
-class BaseImageEncoder
-{
-public:
-    BaseImageEncoder();
-    virtual ~BaseImageEncoder() {}
-    virtual bool isFormatSupported( int depth ) const;
-
-    virtual bool setDestination( const String& filename );
-    virtual bool setDestination( std::vector<uchar>& buf );
-    virtual bool write( const Mat& img, const std::vector<int>& params ) = 0;
-    virtual bool writemulti(const std::vector<Mat>& img_vec, const std::vector<int>& params);
-
-    virtual String getDescription() const;
-    virtual ImageEncoder newEncoder() const;
-
-    virtual void throwOnEror() const;
-
-protected:
-    String m_description;
-
-    String m_filename;
-    std::vector<uchar>* m_buf;
-    bool m_buf_supported;
-
-    String m_last_error;
-};
+//class BaseImageEncoder
+//{
+//public:
+//    BaseImageEncoder();
+//    virtual ~BaseImageEncoder() {}
+//    virtual bool isFormatSupported( int depth ) const;
+//
+//    virtual bool setDestination( const String& filename );
+//    virtual bool setDestination( std::vector<uchar>& buf );
+//    virtual bool write( const Mat& img, const std::vector<int>& params ) = 0;
+//    virtual bool writemulti(const std::vector<Mat>& img_vec, const std::vector<int>& params);
+//
+//    virtual String getDescription() const;
+//    virtual ImageEncoder newEncoder() const;
+//
+//    virtual void throwOnEror() const;
+//
+//protected:
+//    String m_description;
+//
+//    String m_filename;
+//    std::vector<uchar>* m_buf;
+//    bool m_buf_supported;
+//
+//    String m_last_error;
+//};
 
 }
 
