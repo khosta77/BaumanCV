@@ -1,5 +1,28 @@
-#include "../include/ptr.h"
+#ifndef CVRANGEFINDER_SIZE_H
+#define CVRANGEFINDER_SIZE_H
 
+template<typename _Tp> class Size_
+{
+public:
+    typedef _Tp value_type;
+
+    //! default constructor
+    Size_();
+    Size_(_Tp _width, _Tp _height);  // вызывается
+//    Size_(const Point_<_Tp>& pt);
+    //! the area (width*height)
+    _Tp area() const;
+    //! aspect ratio (width/height)
+    double aspectRatio() const;
+    //! true if empty
+    bool empty() const;
+
+    //! conversion of another data type.
+    template<typename _Tp2> operator Size_<_Tp2>() const;
+
+    _Tp width; //!< the width
+    _Tp height; //!< the height
+};
 
 template<typename _Tp> inline
 Size_<_Tp>::Size_()
@@ -117,5 +140,7 @@ bool operator != (const Size_<_Tp>& a, const Size_<_Tp>& b)
     return !(a == b);
 }
 
+typedef Size_<int> Size2i;
+typedef Size2i Size;
 
-
+#endif //CVRANGEFINDER_SIZE_H

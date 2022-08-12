@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <type_traits>
-#include <uchar.h>
+#include "uchar_in_typedef.h"
 
 template<typename T>
 struct Ptr : public std::shared_ptr<T>
@@ -72,41 +72,4 @@ struct Ptr : public std::shared_ptr<T>
     Ptr<Y> dynamicCast() const  { return std::dynamic_pointer_cast<Y>(*this); }
 };
 
-template<typename _Tp> class Size_
-{
-public:
-    typedef _Tp value_type;
-
-    //! default constructor
-    Size_();
-    Size_(_Tp _width, _Tp _height);
-#if OPENCV_ABI_COMPATIBILITY < 500
-    Size_(const Size_& sz) = default;
-    Size_(Size_&& sz) CV_NOEXCEPT = default;
-#endif
-    Size_(const Point_<_Tp>& pt);
-
-#if OPENCV_ABI_COMPATIBILITY < 500
-    Size_& operator = (const Size_& sz) = default;
-    Size_& operator = (Size_&& sz) CV_NOEXCEPT = default;
-#endif
-    //! the area (width*height)
-    _Tp area() const;
-    //! aspect ratio (width/height)
-    double aspectRatio() const;
-    //! true if empty
-    bool empty() const;
-
-    //! conversion of another data type.
-    template<typename _Tp2> operator Size_<_Tp2>() const;
-
-    _Tp width; //!< the width
-    _Tp height; //!< the height
-};
-
-typedef Size_<int> Size2i;
-typedef Size2i Size;
-
-
 #endif //CVRANGEFINDER_PTR_H
-
