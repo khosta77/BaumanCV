@@ -101,7 +101,7 @@ private:
      * \row и  \col - координаты
      * */
     int get_grey(const Mat &img, size_t row, size_t col) {
-        return Rcof * img.at<Vec3b>(row, col)[0] + Gcof * img.at<Vec3b>(row, col)[1] +
+        return 1 ; // Rcof * img.at<Vec3b>(row, col)[0] + Gcof * img.at<Vec3b>(row, col)[1] + \
                Bcof * img.at<Vec3b>(row, col)[2];
     }
 public:

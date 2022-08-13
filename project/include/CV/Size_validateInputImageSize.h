@@ -42,6 +42,7 @@
 #define CV_MAT_CONT_FLAG        (1 << CV_MAT_CONT_FLAG_SHIFT)
 #define CV_AUTOSTEP  0x7fffffff
 #define CV_8U   0
+
 static Size validateInputImageSize(const Size& size) {
 //    CV_Assert(size.width > 0);
 //    CV_Assert(static_cast<size_t>(size.width) <= CV_IO_MAX_IMAGE_WIDTH);
