@@ -97,7 +97,7 @@ public:
 //    Matx<_Tp, n, m> inv(int method=DECOMP_LU, bool *p_is_ok = NULL) const;
 
     //! solve linear system
-    template<int l> Matx<_Tp, n, l> solve(const Matx<_Tp, m, l>& rhs, int flags=DECOMP_LU) const;
+//    template<int l> Matx<_Tp, n, l> solve(const Matx<_Tp, m, l>& rhs, int flags=DECOMP_LU) const;
 //    Vec<_Tp, n> solve(const Vec<_Tp, m>& rhs, int method) const;
 
     //! multiply two matrices element-wise
@@ -202,14 +202,14 @@ namespace internal
     };
 
 
-    template<typename _Tp, int m, int l, int n> struct Matx_FastSolveOp
-    {
-        bool operator()(const Matx<_Tp, m, l>& a, const Matx<_Tp, m, n>& b,
-                        Matx<_Tp, l, n>& x, int method) const
-        {
-            return cv::solve(a, b, x, method);
-        }
-    };
+//    template<typename _Tp, int m, int l, int n> struct Matx_FastSolveOp
+//    {
+//        bool operator()(const Matx<_Tp, m, l>& a, const Matx<_Tp, m, n>& b,
+//                        Matx<_Tp, l, n>& x, int method) const
+//        {
+//            return cv::solve(a, b, x, method);
+//        }
+//    };
 
 //    template<typename _Tp, int m, int n> struct Matx_FastSolveOp<_Tp, m, m, n>
 //    {
@@ -247,29 +247,29 @@ namespace internal
 //        }
 //    };
 
-    template<typename _Tp> struct Matx_FastSolveOp<_Tp, 3, 3, 1>
-    {
-        bool operator()(const Matx<_Tp, 3, 3>& a, const Matx<_Tp, 3, 1>& b,
-                        Matx<_Tp, 3, 1>& x, int) const
-        {
-            _Tp d = (_Tp)determinant(a);
-            if (d == 0)
-                return false;
-            d = 1/d;
-            x(0) = d*(b(0)*(a(1,1)*a(2,2) - a(1,2)*a(2,1)) -
-                      a(0,1)*(b(1)*a(2,2) - a(1,2)*b(2)) +
-                      a(0,2)*(b(1)*a(2,1) - a(1,1)*b(2)));
-
-            x(1) = d*(a(0,0)*(b(1)*a(2,2) - a(1,2)*b(2)) -
-                      b(0)*(a(1,0)*a(2,2) - a(1,2)*a(2,0)) +
-                      a(0,2)*(a(1,0)*b(2) - b(1)*a(2,0)));
-
-            x(2) = d*(a(0,0)*(a(1,1)*b(2) - b(1)*a(2,1)) -
-                      a(0,1)*(a(1,0)*b(2) - b(1)*a(2,0)) +
-                      b(0)*(a(1,0)*a(2,1) - a(1,1)*a(2,0)));
-            return true;
-        }
-    };
+//    template<typename _Tp> struct Matx_FastSolveOp<_Tp, 3, 3, 1>
+//    {
+//        bool operator()(const Matx<_Tp, 3, 3>& a, const Matx<_Tp, 3, 1>& b,
+//                        Matx<_Tp, 3, 1>& x, int) const
+//        {
+//            _Tp d = (_Tp)determinant(a);
+//            if (d == 0)
+//                return false;
+//            d = 1/d;
+//            x(0) = d*(b(0)*(a(1,1)*a(2,2) - a(1,2)*a(2,1)) -
+//                      a(0,1)*(b(1)*a(2,2) - a(1,2)*b(2)) +
+//                      a(0,2)*(b(1)*a(2,1) - a(1,1)*b(2)));
+//
+//            x(1) = d*(a(0,0)*(b(1)*a(2,2) - a(1,2)*b(2)) -
+//                      b(0)*(a(1,0)*a(2,2) - a(1,2)*a(2,0)) +
+//                      a(0,2)*(a(1,0)*b(2) - b(1)*a(2,0)));
+//
+//            x(2) = d*(a(0,0)*(a(1,1)*b(2) - b(1)*a(2,1)) -
+//                      a(0,1)*(a(1,0)*b(2) - b(1)*a(2,0)) +
+//                      b(0)*(a(1,0)*a(2,1) - a(1,1)*a(2,0)));
+//            return true;
+//        }
+//    };
 
 } // internal
 

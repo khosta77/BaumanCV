@@ -195,14 +195,14 @@ Scalar_<_Tp> operator + (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
                         a.val[3] + b.val[3]);
 }
 
-template<typename _Tp> static inline
-Scalar_<_Tp> operator - (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
-{
-    return Scalar_<_Tp>(saturate_cast<_Tp>(a.val[0] - b.val[0]),
-                        saturate_cast<_Tp>(a.val[1] - b.val[1]),
-                        saturate_cast<_Tp>(a.val[2] - b.val[2]),
-                        saturate_cast<_Tp>(a.val[3] - b.val[3]));
-}
+//template<typename _Tp> static inline
+//Scalar_<_Tp> operator - (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+//{
+//    return Scalar_<_Tp>(saturate_cast<_Tp>(a.val[0] - b.val[0]),
+//                        saturate_cast<_Tp>(a.val[1] - b.val[1]),
+//                        saturate_cast<_Tp>(a.val[2] - b.val[2]),
+//                        saturate_cast<_Tp>(a.val[3] - b.val[3]));
+//}
 
 template<typename _Tp> static inline
 Scalar_<_Tp> operator * (const Scalar_<_Tp>& a, _Tp alpha)
@@ -229,14 +229,14 @@ Scalar_<_Tp> operator * (_Tp alpha, const Scalar_<_Tp>& a)
 //}
 
 
-template<typename _Tp> static inline
-Scalar_<_Tp> operator * (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
-{
-    return Scalar_<_Tp>(saturate_cast<_Tp>(a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3]),
-                        saturate_cast<_Tp>(a[0]*b[1] + a[1]*b[0] + a[2]*b[3] - a[3]*b[2]),
-                        saturate_cast<_Tp>(a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1]),
-                        saturate_cast<_Tp>(a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0]));
-}
+//template<typename _Tp> static inline
+//Scalar_<_Tp> operator * (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+//{
+//    return Scalar_<_Tp>(saturate_cast<_Tp>(a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3]),
+//                        saturate_cast<_Tp>(a[0]*b[1] + a[1]*b[0] + a[2]*b[3] - a[3]*b[2]),
+//                        saturate_cast<_Tp>(a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1]),
+//                        saturate_cast<_Tp>(a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0]));
+//}
 
 template<typename _Tp> static inline
 Scalar_<_Tp>& operator *= (Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
@@ -295,19 +295,19 @@ Scalar_<_Tp>& operator /= (Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
     return a;
 }
 
-template<typename _Tp> static inline
-Scalar operator * (const Matx<_Tp, 4, 4>& a, const Scalar& b)
-{
-    Matx<double, 4, 1> c((Matx<double, 4, 4>)a, b, Matx_MatMulOp());
-    return reinterpret_cast<const Scalar&>(c);
-}
-
-template<> inline
-Scalar operator * (const Matx<double, 4, 4>& a, const Scalar& b)
-{
-    Matx<double, 4, 1> c(a, b, Matx_MatMulOp());
-    return reinterpret_cast<const Scalar&>(c);
-}
+//template<typename _Tp> static inline
+//Scalar_ operator * (const Matx<_Tp, 4, 4>& a, const Scalar& b)
+//{
+//    Matx<double, 4, 1> c((Matx<double, 4, 4>)a, b, Matx_MatMulOp());
+//    return reinterpret_cast<const Scalar&>(c);
+//}
+//
+//template<> inline
+//Scalar_ operator * (const Matx<double, 4, 4>& a, const Scalar& b)
+//{
+//    Matx<double, 4, 1> c(a, b, Matx_MatMulOp());
+//    return reinterpret_cast<const Scalar&>(c);
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

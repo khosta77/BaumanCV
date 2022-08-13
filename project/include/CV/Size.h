@@ -9,8 +9,8 @@ public:
     typedef _Tp value_type;
 
     //! default constructor
-    Size_();
-    Size_(_Tp _width, _Tp _height);  // вызывается
+    Size_() : width(0), height(0) {}
+    Size_(_Tp _width, _Tp _height) : width(_width), height(_height) {} // !!!
 //    Size_(const Point_<_Tp>& pt);
     //! the area (width*height)
     _Tp area() const;
@@ -26,23 +26,21 @@ public:
     _Tp height; //!< the height
 };
 
-template<typename _Tp> inline
-Size_<_Tp>::Size_()
-        : width(0), height(0) {}
+//template<typename _Tp> inline
+//Size_<_Tp>::Size_() : width(0), height(0) {}
+//
+//template<typename _Tp> inline
+//Size_<_Tp>::Size_(_Tp _width, _Tp _height) : width(_width), height(_height) {}
 
-template<typename _Tp> inline
-Size_<_Tp>::Size_(_Tp _width, _Tp _height)
-        : width(_width), height(_height) {}
+//template<typename _Tp> inline
+//Size_<_Tp>::Size_(const Point_<_Tp>& pt)
+//        : width(pt.x), height(pt.y) {}
 
-template<typename _Tp> inline
-Size_<_Tp>::Size_(const Point_<_Tp>& pt)
-        : width(pt.x), height(pt.y) {}
-
-template<typename _Tp> template<typename _Tp2> inline
-Size_<_Tp>::operator Size_<_Tp2>() const
-{
-    return Size_<_Tp2>(saturate_cast<_Tp2>(width), saturate_cast<_Tp2>(height));
-}
+//template<typename _Tp> template<typename _Tp2> inline
+//Size_<_Tp>::operator Size_<_Tp2>() const
+//{
+//    return Size_<_Tp2>(saturate_cast<_Tp2>(width), saturate_cast<_Tp2>(height));
+//}
 
 template<typename _Tp> inline
 _Tp Size_<_Tp>::area() const

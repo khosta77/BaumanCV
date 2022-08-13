@@ -42,12 +42,12 @@
 #define CV_MAT_CONT_FLAG        (1 << CV_MAT_CONT_FLAG_SHIFT)
 
 static Size validateInputImageSize(const Size& size) {
-    CV_Assert(size.width > 0);
-    CV_Assert(static_cast<size_t>(size.width) <= CV_IO_MAX_IMAGE_WIDTH);
-    CV_Assert(size.height > 0);
-    CV_Assert(static_cast<size_t>(size.height) <= CV_IO_MAX_IMAGE_HEIGHT);
+//    CV_Assert(size.width > 0);
+//    CV_Assert(static_cast<size_t>(size.width) <= CV_IO_MAX_IMAGE_WIDTH);
+//    CV_Assert(size.height > 0);
+//    CV_Assert(static_cast<size_t>(size.height) <= CV_IO_MAX_IMAGE_HEIGHT);
     uint64 pixels = (uint64)size.width * (uint64)size.height;
-    CV_Assert(pixels <= CV_IO_MAX_IMAGE_PIXELS);
+//    CV_Assert(pixels <= CV_IO_MAX_IMAGE_PIXELS);
     return size;
 }
 
