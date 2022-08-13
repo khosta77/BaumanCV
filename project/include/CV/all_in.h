@@ -12,23 +12,23 @@ void resize(int src_type,
             uchar * dst_data, size_t dst_step, int dst_width, int dst_height,
             double inv_scale_x, double inv_scale_y, int interpolation)
 {
-    CV_INSTRUMENT_REGION();
+//    CV_INSTRUMENT_REGION();
 
-    CV_Assert((dst_width > 0 && dst_height > 0) || (inv_scale_x > 0 && inv_scale_y > 0));
+//    CV_Assert((dst_width > 0 && dst_height > 0) || (inv_scale_x > 0 && inv_scale_y > 0));
     if (inv_scale_x < DBL_EPSILON || inv_scale_y < DBL_EPSILON)
     {
         inv_scale_x = static_cast<double>(dst_width) / src_width;
         inv_scale_y = static_cast<double>(dst_height) / src_height;
     }
 
-    CALL_HAL(resize, cv_hal_resize, src_type, src_data, src_step, src_width, src_height, dst_data, dst_step, dst_width, dst_height, inv_scale_x, inv_scale_y, interpolation);
+//    CALL_HAL(resize, cv_hal_resize, src_type, src_data, src_step, src_width, src_height, dst_data, dst_step, dst_width, dst_height, inv_scale_x, inv_scale_y, interpolation);
 
     int  depth = CV_MAT_DEPTH(src_type), cn = CV_MAT_CN(src_type);
     Size dsize = Size(saturate_cast<int>(src_width*inv_scale_x),
                       saturate_cast<int>(src_height*inv_scale_y));
-    CV_Assert( !dsize.empty() );
+//    CV_Assert( !dsize.empty() );
 
-    CV_IPP_RUN_FAST(ipp_resize(src_data, src_step, src_width, src_height, dst_data, dst_step, dsize.width, dsize.height, inv_scale_x, inv_scale_y, depth, cn, interpolation))
+//    CV_IPP_RUN_FAST(ipp_resize(src_data, src_step, src_width, src_height, dst_data, dst_step, dsize.width, dsize.height, inv_scale_x, inv_scale_y, depth, cn, interpolation))
 
     static ResizeFunc linear_tab[] =
             {
@@ -267,7 +267,7 @@ void resize(int src_type,
         CV_Error( CV_StsBadArg, "Unknown interpolation method" );
     ksize2 = ksize/2;
 
-    CV_Assert( func != 0 );
+//    CV_Assert( func != 0 );
 
     AutoBuffer<uchar> _buffer((width + dsize.height)*(sizeof(int) + sizeof(float)*ksize));
     int* xofs = (int*)_buffer.data();
