@@ -48,8 +48,8 @@ template<typename _Tp> inline
 _Tp Size_<_Tp>::area() const
 {
     const _Tp result = width * height;
-    CV_DbgAssert(!std::numeric_limits<_Tp>::is_integer
-                 || width == 0 || result / width == height); // make sure the result fits in the return value
+//    CV_DbgAssert(!std::numeric_limits<_Tp>::is_integer
+//                 || width == 0 || result / width == height); // make sure the result fits in the return value
     return result;
 }
 
@@ -247,13 +247,13 @@ return p[i];
 
 inline MatStep::operator size_t() const
 {
-    CV_DbgAssert( p == buf );
+//    CV_DbgAssert( p == buf );
     return buf[0];
 }
 
 inline MatStep& MatStep::operator = (size_t s)
 {
-    CV_DbgAssert( p == buf );
+//    CV_DbgAssert( p == buf );
     buf[0] = s;
     return *this;
 }

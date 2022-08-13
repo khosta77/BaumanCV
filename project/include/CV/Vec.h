@@ -60,9 +60,9 @@ public:
     const _Tp& operator ()(int i) const;
     _Tp& operator ()(int i);
 
-    Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_AddOp);
-    Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_SubOp);
-    template<typename _T2> Vec(const Matx<_Tp, cn, 1>& a, _T2 alpha, Matx_ScaleOp);
+//    Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_AddOp);
+//    Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_SubOp);
+//    template<typename _T2> Vec(const Matx<_Tp, cn, 1>& a, _T2 alpha, Matx_ScaleOp);
 };
 
 /////////////////////////////////// Vec Implementation ///////////////////////////////////
@@ -126,17 +126,17 @@ template<typename _Tp, int cn> inline
 Vec<_Tp, cn>::Vec(const Vec<_Tp, cn>& m)
         : Matx<_Tp, cn, 1>(m.val) {}
 
-template<typename _Tp, int cn> inline
-Vec<_Tp, cn>::Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_AddOp op)
-        : Matx<_Tp, cn, 1>(a, b, op) {}
-
-template<typename _Tp, int cn> inline
-Vec<_Tp, cn>::Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_SubOp op)
-        : Matx<_Tp, cn, 1>(a, b, op) {}
-
-template<typename _Tp, int cn> template<typename _T2> inline
-Vec<_Tp, cn>::Vec(const Matx<_Tp, cn, 1>& a, _T2 alpha, Matx_ScaleOp op)
-        : Matx<_Tp, cn, 1>(a, alpha, op) {}
+//template<typename _Tp, int cn> inline
+//Vec<_Tp, cn>::Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_AddOp op)
+//        : Matx<_Tp, cn, 1>(a, b, op) {}
+//
+//template<typename _Tp, int cn> inline
+//Vec<_Tp, cn>::Vec(const Matx<_Tp, cn, 1>& a, const Matx<_Tp, cn, 1>& b, Matx_SubOp op)
+//        : Matx<_Tp, cn, 1>(a, b, op) {}
+//
+//template<typename _Tp, int cn> template<typename _T2> inline
+//Vec<_Tp, cn>::Vec(const Matx<_Tp, cn, 1>& a, _T2 alpha, Matx_ScaleOp op)
+//        : Matx<_Tp, cn, 1>(a, alpha, op) {}
 
 template<typename _Tp, int cn> inline
 Vec<_Tp, cn> Vec<_Tp, cn>::all(_Tp alpha)
@@ -158,42 +158,52 @@ Vec<_Tp, cn> Vec<_Tp, cn>::zeros()
     return Vec::all(0);
 }
 
-template<typename _Tp, int cn> inline
-Vec<_Tp, cn> Vec<_Tp, cn>::mul(const Vec<_Tp, cn>& v) const
+//template<typename _Tp, int cn> inline
+//Vec<_Tp, cn> Vec<_Tp, cn>::mul(const Vec<_Tp, cn>& v) const
+//{
+//    Vec<_Tp, cn> w;
+//    for( int i = 0; i < cn; i++ ) w.val[i] = saturate_cast<_Tp>(this->val[i]*v.val[i]);
+//    return w;
+//}
+
+template<typename _Tp> Vec<_Tp, 2> inline conjugate(const Vec<_Tp, 2>& v)
 {
-    Vec<_Tp, cn> w;
-    for( int i = 0; i < cn; i++ ) w.val[i] = saturate_cast<_Tp>(this->val[i]*v.val[i]);
-    return w;
+    return Vec<_Tp, 2>(v[0], -v[1]);
+}
+
+template<typename _Tp> Vec<_Tp, 4> inline conjugate(const Vec<_Tp, 4>& v)
+{
+    return Vec<_Tp, 4>(v[0], -v[1], -v[2], -v[3]);
 }
 
 template<> inline
 Vec<float, 2> Vec<float, 2>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return conjugate(*this);
 }
 
 template<> inline
 Vec<double, 2> Vec<double, 2>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return conjugate(*this);
 }
 
 template<> inline
 Vec<float, 4> Vec<float, 4>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return conjugate(*this);
 }
 
 template<> inline
 Vec<double, 4> Vec<double, 4>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return conjugate(*this);
 }
 
 template<typename _Tp, int cn> inline
 Vec<_Tp, cn> Vec<_Tp, cn>::cross(const Vec<_Tp, cn>&) const
 {
-    CV_StaticAssert(cn == 3, "for arbitrary-size vector there is no cross-product defined");
+//    CV_StaticAssert(cn == 3, "for arbitrary-size vector there is no cross-product defined");
     return Vec<_Tp, cn>();
 }
 
@@ -213,39 +223,39 @@ Vec<double, 3> Vec<double, 3>::cross(const Vec<double, 3>& v) const
                          this->val[0]*v.val[1] - this->val[1]*v.val[0]);
 }
 
-template<typename _Tp, int cn> template<typename T2> inline
-Vec<_Tp, cn>::operator Vec<T2, cn>() const
-{
-    Vec<T2, cn> v;
-    for( int i = 0; i < cn; i++ ) v.val[i] = saturate_cast<T2>(this->val[i]);
-    return v;
-}
+//template<typename _Tp, int cn> template<typename T2> inline
+//Vec<_Tp, cn>::operator Vec<T2, cn>() const
+//{
+//    Vec<T2, cn> v;
+//    for( int i = 0; i < cn; i++ ) v.val[i] = saturate_cast<T2>(this->val[i]);
+//    return v;
+//}
 
 template<typename _Tp, int cn> inline
 const _Tp& Vec<_Tp, cn>::operator [](int i) const
 {
-    CV_DbgAssert( (unsigned)i < (unsigned)cn );
+//    CV_DbgAssert( (unsigned)i < (unsigned)cn );
     return this->val[i];
 }
 
 template<typename _Tp, int cn> inline
 _Tp& Vec<_Tp, cn>::operator [](int i)
 {
-    CV_DbgAssert( (unsigned)i < (unsigned)cn );
+//    CV_DbgAssert( (unsigned)i < (unsigned)cn );
     return this->val[i];
 }
 
 template<typename _Tp, int cn> inline
 const _Tp& Vec<_Tp, cn>::operator ()(int i) const
 {
-    CV_DbgAssert( (unsigned)i < (unsigned)cn );
+//    CV_DbgAssert( (unsigned)i < (unsigned)cn );
     return this->val[i];
 }
 
 template<typename _Tp, int cn> inline
 _Tp& Vec<_Tp, cn>::operator ()(int i)
 {
-    CV_DbgAssert( (unsigned)i < (unsigned)cn );
+//    CV_DbgAssert( (unsigned)i < (unsigned)cn );
     return this->val[i];
 }
 

@@ -2,6 +2,7 @@
 #define CVRANGEFINDER_ENUM_STATUS_H
 
 #include "iostream"
+#include <cstdlib>
 
 enum ImreadModes {
     IMREAD_UNCHANGED            = -1, //!< If set, return the loaded image as is (with alpha channel, otherwise it gets cropped). Ignore EXIF orientation.
@@ -19,7 +20,7 @@ enum ImreadModes {
     IMREAD_IGNORE_ORIENTATION   = 128 //!< If set, do not rotate the image according to EXIF's orientation flag.
 };
 
-enum InterpolationFlags{
+enum InterpolationFlags {
     INTER_NEAREST        = 0,
     INTER_LINEAR         = 1,
     INTER_CUBIC          = 2,
@@ -32,8 +33,7 @@ enum InterpolationFlags{
     WARP_INVERSE_MAP     = 16
 };
 
-enum ExifTagName
-{
+enum ExifTagName {
     IMAGE_DESCRIPTION       = 0x010E,   ///< Image Description: ASCII string
     MAKE                    = 0x010F,   ///< Description of manufacturer: ASCII string
     MODEL                   = 0x0110,   ///< Description of camera model: ASCII string
@@ -53,7 +53,27 @@ enum ExifTagName
     INVALID_TAG             = 0xFFFF    ///< Shows that the tag was not recognized
 };
 
+static inline const char * envRead(const char * name)
+{
+    return getenv(name);
+}
 
+template <typename T>
+T parseOption(const std::string &);
+
+template<>
+inline bool parseOption(const std::string & value)
+{
+    if (value == "1" || value == "True" || value == "true" || value == "TRUE")
+    {
+        return true;
+    }
+    if (value == "0" || value == "False" || value == "false" || value == "FALSE")
+    {
+        return false;
+    }
+//    throw ParseError(value);
+}
 
 template<typename T>
 inline T read(const std::string & k, const T & defaultValue)
@@ -65,33 +85,13 @@ inline T read(const std::string & k, const T & defaultValue)
     } catch (...) {
         std::cout << "erorr" << std::endl;
     }
-//    catch (const ParseError &err)
-//    {
-//        CV_Error(cv::Error::StsBadArg, err.toString(k));
-//    }
     return defaultValue;
 }
-
-//bool getConfigurationParameterBool(const char* name, bool defaultValue)
-//{
-//    return read<bool>(name, defaultValue);
-//}
 
 size_t getConfigurationParameterSizeT(const char* name, size_t defaultValue)
 {
     return read<size_t>(name, defaultValue);
 }
-
-//String getConfigurationParameterString(const char* name, const char* defaultValue)
-//{
-//    return read<String>(name, defaultValue ? String(defaultValue) : String());
-//}
-//
-//Paths getConfigurationParameterPaths(const char* name, const Paths &defaultValue)
-//{
-//    return read<Paths>(name, defaultValue);
-//}
-
 
 static const size_t CV_IO_MAX_IMAGE_PARAMS = getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_PARAMS", 50);
 static const size_t CV_IO_MAX_IMAGE_WIDTH = getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_WIDTH", 1 << 20);

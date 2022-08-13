@@ -1,6 +1,8 @@
 #ifndef CVRANGEFINDER_SCALAR_H
 #define CVRANGEFINDER_SCALAR_H
 
+#include "Vec.h"
+
 template<typename _Tp>
 class Scalar_ : public Vec<_Tp, 4> {
 public:
@@ -81,15 +83,15 @@ this->val[3] = std::move(s.val[3]);
 return *this;
 }
 
-template<typename _Tp> template<typename _Tp2, int cn> inline
-Scalar_<_Tp>::Scalar_(const Vec<_Tp2, cn>& v)
-{
-    int i;
-    for( i = 0; i < (cn < 4 ? cn : 4); i++ )
-        this->val[i] = cv::saturate_cast<_Tp>(v.val[i]);
-    for( ; i < 4; i++ )
-        this->val[i] = 0;
-}
+//template<typename _Tp> template<typename _Tp2, int cn> inline
+//Scalar_<_Tp>::Scalar_(const Vec<_Tp2, cn>& v)
+//{
+//    int i;
+//    for( i = 0; i < (cn < 4 ? cn : 4); i++ )
+//        this->val[i] = cv::saturate_cast<_Tp>(v.val[i]);
+//    for( ; i < 4; i++ )
+//        this->val[i] = 0;
+//}
 
 template<typename _Tp> inline
 Scalar_<_Tp>::Scalar_(_Tp v0)
@@ -105,23 +107,23 @@ Scalar_<_Tp> Scalar_<_Tp>::all(_Tp v0)
 }
 
 
-template<typename _Tp> inline
-Scalar_<_Tp> Scalar_<_Tp>::mul(const Scalar_<_Tp>& a, double scale ) const
-{
-    return Scalar_<_Tp>(saturate_cast<_Tp>(this->val[0] * a.val[0] * scale),
-                        saturate_cast<_Tp>(this->val[1] * a.val[1] * scale),
-                        saturate_cast<_Tp>(this->val[2] * a.val[2] * scale),
-                        saturate_cast<_Tp>(this->val[3] * a.val[3] * scale));
-}
+//template<typename _Tp> inline
+//Scalar_<_Tp> Scalar_<_Tp>::mul(const Scalar_<_Tp>& a, double scale ) const
+//{
+//    return Scalar_<_Tp>(saturate_cast<_Tp>(this->val[0] * a.val[0] * scale),
+//                        saturate_cast<_Tp>(this->val[1] * a.val[1] * scale),
+//                        saturate_cast<_Tp>(this->val[2] * a.val[2] * scale),
+//                        saturate_cast<_Tp>(this->val[3] * a.val[3] * scale));
+//}
 
-template<typename _Tp> inline
-Scalar_<_Tp> Scalar_<_Tp>::conj() const
-{
-    return Scalar_<_Tp>(saturate_cast<_Tp>( this->val[0]),
-                        saturate_cast<_Tp>(-this->val[1]),
-                        saturate_cast<_Tp>(-this->val[2]),
-                        saturate_cast<_Tp>(-this->val[3]));
-}
+//template<typename _Tp> inline
+//Scalar_<_Tp> Scalar_<_Tp>::conj() const
+//{
+//    return Scalar_<_Tp>(saturate_cast<_Tp>( this->val[0]),
+//                        saturate_cast<_Tp>(-this->val[1]),
+//                        saturate_cast<_Tp>(-this->val[2]),
+//                        saturate_cast<_Tp>(-this->val[3]));
+//}
 
 template<typename _Tp> inline
 bool Scalar_<_Tp>::isReal() const
@@ -130,14 +132,14 @@ bool Scalar_<_Tp>::isReal() const
 }
 
 
-template<typename _Tp> template<typename T2> inline
-Scalar_<_Tp>::operator Scalar_<T2>() const
-{
-    return Scalar_<T2>(saturate_cast<T2>(this->val[0]),
-                       saturate_cast<T2>(this->val[1]),
-                       saturate_cast<T2>(this->val[2]),
-                       saturate_cast<T2>(this->val[3]));
-}
+//template<typename _Tp> template<typename T2> inline
+//Scalar_<_Tp>::operator Scalar_<T2>() const
+//{
+//    return Scalar_<T2>(saturate_cast<T2>(this->val[0]),
+//                       saturate_cast<T2>(this->val[1]),
+//                       saturate_cast<T2>(this->val[2]),
+//                       saturate_cast<T2>(this->val[3]));
+//}
 
 
 template<typename _Tp> static inline
@@ -217,14 +219,14 @@ Scalar_<_Tp> operator * (_Tp alpha, const Scalar_<_Tp>& a)
     return a*alpha;
 }
 
-template<typename _Tp> static inline
-Scalar_<_Tp> operator - (const Scalar_<_Tp>& a)
-{
-    return Scalar_<_Tp>(saturate_cast<_Tp>(-a.val[0]),
-                        saturate_cast<_Tp>(-a.val[1]),
-                        saturate_cast<_Tp>(-a.val[2]),
-                        saturate_cast<_Tp>(-a.val[3]));
-}
+//template<typename _Tp> static inline
+//Scalar_<_Tp> operator - (const Scalar_<_Tp>& a)
+//{
+//    return Scalar_<_Tp>(saturate_cast<_Tp>(-a.val[0]),
+//                        saturate_cast<_Tp>(-a.val[1]),
+//                        saturate_cast<_Tp>(-a.val[2]),
+//                        saturate_cast<_Tp>(-a.val[3]));
+//}
 
 
 template<typename _Tp> static inline

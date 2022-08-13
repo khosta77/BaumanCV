@@ -111,9 +111,9 @@ public:
         Mat img;
         String str = filename;
         imread_(str, flags, img);
-        if (!img.data) {
-            throw std::exception();
-        }
+//        if (!img.data) {
+//            throw std::exception();
+//        }
         this->rows = (size_t)img.rows;
         this->cols = (size_t)img.cols;
         this->matrix = new double[this->rows * this->cols];
