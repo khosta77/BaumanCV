@@ -1,6 +1,8 @@
 #ifndef CVRANGEFINDER_BASEIMAGEDECODER_H
 #define CVRANGEFINDER_BASEIMAGEDECODER_H
 
+#include <iostream>
+#include <cstring>
 #include "Mat.h"
 #include "Enum_status.h"
 #include "Ptr.h"
@@ -8,6 +10,7 @@
 #include "ExifEntry.h"
 
 class BaseImageDecoder;
+typedef Ptr<BaseImageDecoder> ImageDecoder;
 //class BaseImageEncoder;
 //typedef Ptr<BaseImageEncoder> ImageEncoder;
 ///////////////////////////////// base class for decoders ////////////////////////
@@ -56,10 +59,9 @@ BaseImageDecoder::BaseImageDecoder()
 }
 
 
-ExifEntry_t BaseImageDecoder::getExifTag(const ExifTagName tag) const
-{
-    return m_exif.getTag(tag);
-}
+//ExifEntry_t BaseImageDecoder::getExifTag(const ExifTagName tag) const {
+//    return m_exif.getTag(tag);
+//}
 bool BaseImageDecoder::setSource( const String& filename )
 {
     m_filename = filename;

@@ -25,26 +25,26 @@ struct Ptr : public std::shared_ptr<T>
     inline Ptr(std::shared_ptr<T>&& o)  : std::shared_ptr<T>(std::move(o)) {}
 
     // Overload with custom DefaultDeleter: Ptr<IplImage>(...)
-    template<typename Y>
-    inline Ptr(const std::true_type&, Y* ptr) : std::shared_ptr<T>(ptr, DefaultDeleter<Y>()) {}
+//    template<typename Y>
+//    inline Ptr(const std::true_type&, Y* ptr) : std::shared_ptr<T>(ptr, DefaultDeleter<Y>()) {}
 
     // Overload without custom deleter: Ptr<std::string>(...);
     template<typename Y>
     inline Ptr(const std::false_type&, Y* ptr) : std::shared_ptr<T>(ptr) {}
 
-    template<typename Y = T>
-    inline Ptr(Y* ptr) : Ptr(has_custom_delete<Y>(), ptr) {}
+//    template<typename Y = T>
+//    inline Ptr(Y* ptr) : Ptr(has_custom_delete<Y>(), ptr) {}
 
     // Overload with custom DefaultDeleter: Ptr<IplImage>(...)
-    template<typename Y>
-    inline void reset(const std::true_type&, Y* ptr) { std::shared_ptr<T>::reset(ptr, DefaultDeleter<Y>()); }
+//    template<typename Y>
+//    inline void reset(const std::true_type&, Y* ptr) { std::shared_ptr<T>::reset(ptr, DefaultDeleter<Y>()); }
 
     // Overload without custom deleter: Ptr<std::string>(...);
     template<typename Y>
     inline void reset(const std::false_type&, Y* ptr) { std::shared_ptr<T>::reset(ptr); }
 
-    template<typename Y>
-    inline void reset(Y* ptr) { Ptr<T>::reset(has_custom_delete<Y>(), ptr); }
+//    template<typename Y>
+//    inline void reset(Y* ptr) { Ptr<T>::reset(has_custom_delete<Y>(), ptr); }
 
     template<class Y, class Deleter>
     void reset(Y* ptr, Deleter d) { std::shared_ptr<T>::reset(ptr, d); }

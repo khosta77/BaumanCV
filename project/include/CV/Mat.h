@@ -12,6 +12,8 @@ class Mat;
 void* fastMalloc(size_t size);
 void finalizeHdr(Mat& m);
 int updateContinuityFlag(int flags, int dims, const int* size, const size_t* step);
+void setSize( Mat& m, int _dims, const int* _sz, const size_t* _steps, bool autoSteps=false );
+
 
 enum AccessFlag { ACCESS_READ=1<<24, ACCESS_WRITE=1<<25,
     ACCESS_RW=3<<24, ACCESS_MASK=ACCESS_RW, ACCESS_FAST=1<<26 };
@@ -19,12 +21,12 @@ enum AccessFlag { ACCESS_READ=1<<24, ACCESS_WRITE=1<<25,
 enum UMatUsageFlags {
     USAGE_DEFAULT = 0,
 
-    // buffer allocation policy is platform and usage specific
+    // политика распределения буфера зависит от платформы и использования
     USAGE_ALLOCATE_HOST_MEMORY = 1 << 0,
     USAGE_ALLOCATE_DEVICE_MEMORY = 1 << 1,
-    USAGE_ALLOCATE_SHARED_MEMORY = 1 << 2, // It is not equal to: USAGE_ALLOCATE_HOST_MEMORY | USAGE_ALLOCATE_DEVICE_MEMORY
+    USAGE_ALLOCATE_SHARED_MEMORY = 1 << 2, // Это не равносильно: USAGE_ALLOCATE_HOST_MEMORY | USAGE_ALLOCATE_DEVICE_MEMORY
 
-    __UMAT_USAGE_FLAGS_32BIT = 0x7fffffff // Binary compatibility hint
+    __UMAT_USAGE_FLAGS_32BIT = 0x7fffffff // Подсказка о совместимости с двоичными файлами
 };
 
 //class UMat {
@@ -246,38 +248,114 @@ enum UMatUsageFlags {
 //                protected:
 //        };
 
-struct UMatData;
+class MatAllocator;
+class Mat;
+
+struct UMatData {
+    enum MemoryFlag {
+        COPY_ON_MAP = 1, HOST_COPY_OBSOLETE = 2,
+        DEVICE_COPY_OBSOLETE = 4, TEMP_UMAT = 8, TEMP_COPIED_UMAT = 24,
+        USER_ALLOCATED = 32, DEVICE_MEM_MAPPED = 64,
+        ASYNC_CLEANUP = 128
+    };
+
+    UMatData(const MatAllocator *allocator) {
+        prevAllocator = currAllocator = allocator;
+        urefcount = refcount = mapcount = 0;
+        data = origdata = 0;
+        size = 0;
+        flags = static_cast<UMatData::MemoryFlag>(0);
+        handle = 0;
+        userdata = 0;
+        allocatorFlags_ = 0;
+        originalUMatData = NULL;
+    }
+
+    ~UMatData() {
+        prevAllocator = currAllocator = 0;
+        urefcount = refcount = 0;
+        data = origdata = 0;
+        size = 0;
+        bool isAsyncCleanup = !!(flags & UMatData::ASYNC_CLEANUP);
+        flags = static_cast<UMatData::MemoryFlag>(0);
+        handle = 0;
+        userdata = 0;
+        allocatorFlags_ = 0;
+        if (originalUMatData) {
+            bool showWarn = false;
+            UMatData* u = originalUMatData;
+            bool zero_Ref = CV_XADD(&(u->refcount), -1) == 1;
+            if (zero_Ref) {
+                // имитировать Mat::deallocate
+                if (u->mapcount != 0) {
+                    (u->currAllocator ? u->currAllocator : getDefaultAllocatorMatRef())->unmap(u);
+                } else {
+                    // мы не делаем "map", поэтому мы не можем сделать "unmap".
+                }
+            }
+            bool zero_URef = CV_XADD(&(u->urefcount), -1) == 1;
+            if (zero_Ref && !zero_URef)
+                showWarn = true;
+            if (zero_Ref && zero_URef) { // упс, нам нужно освободить ресурсы
+                showWarn = !isAsyncCleanup;
+                // имитировать UMat::deallocate
+                u->currAllocator->deallocate(u);
+            }
+
+            originalUMatData = NULL;
+        }
+    }
+
+    // provide atomic access to the structure
+    void lock();
+    void unlock();
+    bool hostCopyObsolete() const;
+    bool deviceCopyObsolete() const;
+    bool deviceMemMapped() const;
+    bool copyOnMap() const;
+    bool tempUMat() const;
+    bool tempCopiedUMat() const;
+    void markHostCopyObsolete(bool flag);
+    void markDeviceCopyObsolete(bool flag);
+    void markDeviceMemMapped(bool flag);
+
+    const MatAllocator *prevAllocator;
+    const MatAllocator *currAllocator;
+    int urefcount;
+    int refcount;
+    uchar *data;
+    uchar *origdata;
+    size_t size;
+
+    UMatData::MemoryFlag flags;
+    void *handle;
+    void *userdata;
+    int allocatorFlags_;
+    int mapcount;
+    UMatData *originalUMatData;
+    std::shared_ptr<void> allocatorContext;
+};
 
 class MatAllocator {
 public:
     MatAllocator() {}
-
     virtual ~MatAllocator() {}
-
-    virtual UMatData *allocate(int dims, const int *sizes, int type,
-                               void *data, size_t *step, AccessFlag flags,
-                               UMatUsageFlags usageFlags) const = 0;
-
+    virtual UMatData *allocate(int dims, const int *sizes, int type, void *data, size_t *step,
+                               AccessFlag flags, UMatUsageFlags usageFlags) const = 0;
     virtual bool allocate(UMatData *data, AccessFlag accessflags, UMatUsageFlags usageFlags) const = 0;
-
     virtual void deallocate(UMatData *data) const = 0;
-
     virtual void map(UMatData *data, AccessFlag accessflags) const;
-
-    virtual void unmap(UMatData *data) const;
-
-    virtual void download(UMatData *data, void *dst, int dims, const size_t sz[],
-                          const size_t srcofs[], const size_t srcstep[],
-                          const size_t dststep[]) const;
-
-    virtual void upload(UMatData *data, const void *src, int dims, const size_t sz[],
-                        const size_t dstofs[], const size_t dststep[],
-                        const size_t srcstep[]) const;
-
-    virtual void copy(UMatData *srcdata, UMatData *dstdata, int dims, const size_t sz[],
-                      const size_t srcofs[], const size_t srcstep[],
-                      const size_t dstofs[], const size_t dststep[], bool sync) const;
-
+    virtual void unmap(UMatData *data) const {
+        if(u->urefcount == 0 && u->refcount == 0) {
+            deallocate(u);
+        }
+    }
+    virtual void download(UMatData *data, void *dst, int dims, const size_t sz[], const size_t srcofs[],
+                          const size_t srcstep[], const size_t dststep[]) const;
+    virtual void upload(UMatData *data, const void *src, int dims, const size_t sz[], const size_t dstofs[],
+                        const size_t dststep[], const size_t srcstep[]) const;
+    virtual void copy(UMatData *srcdata, UMatData *dstdata, int dims, const size_t sz[], const size_t srcofs[],
+                      const size_t srcstep[], const size_t dstofs[], const size_t dststep[], bool sync) const;
 //    // default implementation returns DummyBufferPoolController
 //    virtual BufferPoolController *getBufferPoolController(const char *id = NULL) const;
 };
@@ -326,59 +404,6 @@ public:
     }
 };
 
-
-struct UMatData {
-    enum MemoryFlag {
-        COPY_ON_MAP = 1, HOST_COPY_OBSOLETE = 2,
-        DEVICE_COPY_OBSOLETE = 4, TEMP_UMAT = 8, TEMP_COPIED_UMAT = 24,
-        USER_ALLOCATED = 32, DEVICE_MEM_MAPPED = 64,
-        ASYNC_CLEANUP = 128
-    };
-
-    UMatData(const MatAllocator *allocator) {
-        prevAllocator = currAllocator = allocator;
-        urefcount = refcount = mapcount = 0;
-        data = origdata = 0;
-        size = 0;
-        flags = static_cast<UMatData::MemoryFlag>(0);
-        handle = 0;
-        userdata = 0;
-        allocatorFlags_ = 0;
-        originalUMatData = NULL;
-    }
-
-    ~UMatData();
-
-    // provide atomic access to the structure
-    void lock();
-    void unlock();
-    bool hostCopyObsolete() const;
-    bool deviceCopyObsolete() const;
-    bool deviceMemMapped() const;
-    bool copyOnMap() const;
-    bool tempUMat() const;
-    bool tempCopiedUMat() const;
-    void markHostCopyObsolete(bool flag);
-    void markDeviceCopyObsolete(bool flag);
-    void markDeviceMemMapped(bool flag);
-
-    const MatAllocator *prevAllocator;
-    const MatAllocator *currAllocator;
-    int urefcount;
-    int refcount;
-    uchar *data;
-    uchar *origdata;
-    size_t size;
-
-    UMatData::MemoryFlag flags;
-    void *handle;
-    void *userdata;
-    int allocatorFlags_;
-    int mapcount;
-    UMatData *originalUMatData;
-    std::shared_ptr<void> allocatorContext;
-};
-
 //// forward decls, implementation is below in this file
 //void setSize(UMat& m, int _dims, const int* _sz, const size_t* _steps,
 //             bool autoSteps = false);
@@ -407,68 +432,94 @@ struct UMatData {
 //    originalUMatData = NULL;
 //}
 
-UMatData::~UMatData()
-{
-    prevAllocator = currAllocator = 0;
-    urefcount = refcount = 0;
-    CV_Assert(mapcount == 0);
-    data = origdata = 0;
-    size = 0;
-    bool isAsyncCleanup = !!(flags & UMatData::ASYNC_CLEANUP);
-    flags = static_cast<UMatData::MemoryFlag>(0);
-    handle = 0;
-    userdata = 0;
-    allocatorFlags_ = 0;
-    if (originalUMatData)
-    {
-        bool showWarn = false;
-        UMatData* u = originalUMatData;
-        bool zero_Ref = CV_XADD(&(u->refcount), -1) == 1;
-        if (zero_Ref)
-        {
-            // simulate Mat::deallocate
-            if (u->mapcount != 0)
-            {
-                (u->currAllocator ? u->currAllocator : Mat::getDefaultAllocator())->unmap(u);
-            }
-            else
-            {
-                // we don't do "map", so we can't do "unmap"
-            }
-        }
-        bool zero_URef = CV_XADD(&(u->urefcount), -1) == 1;
-        if (zero_Ref && !zero_URef)
-            showWarn = true;
-        if (zero_Ref && zero_URef) // oops, we need to free resources
-        {
-            showWarn = !isAsyncCleanup;
-            // simulate UMat::deallocate
-            u->currAllocator->deallocate(u);
-        }
+//UMatData::~UMatData()
+//{
+//    prevAllocator = currAllocator = 0;
+//    urefcount = refcount = 0;
+//    CV_Assert(mapcount == 0);
+//    data = origdata = 0;
+//    size = 0;
+//    bool isAsyncCleanup = !!(flags & UMatData::ASYNC_CLEANUP);
+//    flags = static_cast<UMatData::MemoryFlag>(0);
+//    handle = 0;
+//    userdata = 0;
+//    allocatorFlags_ = 0;
+//    if (originalUMatData)
+//    {
+//        bool showWarn = false;
+//        UMatData* u = originalUMatData;
+//        bool zero_Ref = CV_XADD(&(u->refcount), -1) == 1;
+//        if (zero_Ref)
+//        {
+//            // simulate Mat::deallocate
+//            if (u->mapcount != 0)
+//            {
+//                (u->currAllocator ? u->currAllocator : Mat::getDefaultAllocator())->unmap(u);
+//            }
+//            else
+//            {
+//                // we don't do "map", so we can't do "unmap"
+//            }
+//        }
+//        bool zero_URef = CV_XADD(&(u->urefcount), -1) == 1;
+//        if (zero_Ref && !zero_URef)
+//            showWarn = true;
+//        if (zero_Ref && zero_URef) // oops, we need to free resources
+//        {
+//            showWarn = !isAsyncCleanup;
+//            // simulate UMat::deallocate
+//            u->currAllocator->deallocate(u);
+//        }
+//
+//        originalUMatData = NULL;
+//    }
+//}
 
-        originalUMatData = NULL;
-    }
-}
+//void UMatData::lock()
+//{
+//    // nothing in OPENCV_DISABLE_THREAD_SUPPORT mode
+//}
+//
+//void UMatData::unlock()
+//{
+//    // nothing in OPENCV_DISABLE_THREAD_SUPPORT mode
+//}
 
-void UMatData::lock()
-{
-    // nothing in OPENCV_DISABLE_THREAD_SUPPORT mode
-}
-
-void UMatData::unlock()
-{
-    // nothing in OPENCV_DISABLE_THREAD_SUPPORT mode
-}
-
+MatAllocator*& getDefaultAllocatorMatRef();
 
 class  Mat {
 public:
-    Mat() : flags(MAGIC_VAL), dims(0), rows(0), cols(0), data(0), datastart(0), dataend(0), datalimit(0),
+    Mat() : flags(0x42FF0000), dims(0), rows(0), cols(0), data(0), datastart(0), dataend(0), datalimit(0),
             allocator(0), u(0), size(&rows), step(0) {}
     ~Mat();
 
-//
-//    Mat &operator=(const Mat &m);
+
+    Mat &operator=(const Mat &m) {
+        if( this != &m )
+        {
+            if( m.u )
+                CV_XADD(&m.u->refcount, 1);
+            release();
+            flags = m.flags;
+            if( dims <= 2 && m.dims <= 2 )
+            {
+                dims = m.dims;
+                rows = m.rows;
+                cols = m.cols;
+                step[0] = m.step[0];
+                step[1] = m.step[1];
+            }
+            else
+                copySize(m);
+            data = m.data;
+            datastart = m.datastart;
+            dataend = m.dataend;
+            datalimit = m.datalimit;
+            allocator = m.allocator;
+            u = m.u;
+        }
+        return *this;
+    }
 //    Mat &operator=(const MatExpr &expr);
 
     //! retrieve UMat from Mat
@@ -485,7 +536,7 @@ public:
 //    void copyTo(OutputArray m) const;
 //    void copyTo(OutputArray m, InputArray mask) const;
 //    void convertTo(OutputArray m, int rtype, double alpha = 1, double beta = 0) const;
-//    Mat &operator=(const Scalar &s);
+//    Mat &operator=(const Scalar &s);  //
 //    Mat &setTo(InputArray value, InputArray mask = noArray());
 //    Mat reshape(int cn, int rows = 0) const;
 //    Mat reshape(int cn, int newndims, const int *newsz) const;
@@ -514,7 +565,7 @@ public:
 
 
     void create(int _rows, int _cols, int _type) {  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        _type &= TYPE_MASK;
+        _type &= 0x00000FFF;
         if( dims <= 2 && rows == _rows && cols == _cols && type() == _type && data )
             return;
         int sz[] = {_rows, _cols};
@@ -550,7 +601,7 @@ public:
         release();
         if( d == 0 )
             return;
-        flags = (_type & CV_MAT_TYPE_MASK) | MAGIC_VAL; /// ????
+        flags = (_type & CV_MAT_TYPE_MASK) | 0x42FF0000; /// ????
         setSize(*this, d, _sizes, 0, true);
 
         if( total() > 0 )
@@ -662,7 +713,7 @@ public:
     }
 
     size_t total(int startDim, int endDim = INT_MAX) const {
-        CV_Assert( 0 <= startDim && startDim <= endDim);
+//        CV_Assert( 0 <= startDim && startDim <= endDim);
         size_t p = 1;
         int endDim_ = endDim <= dims ? endDim : dims;
         for( int i = startDim; i < endDim_; i++ )
@@ -852,7 +903,7 @@ public:
 
     //! internal use method: updates the continuity flag
     void updateContinuityFlag() {
-        flags = cv::updateContinuityFlag(flags, dims, size.p, step.p);
+        flags = updateContinuityFlag(flags, dims, size.p, step.p);
     }
 
     //! interaction with UMat
@@ -1004,7 +1055,5 @@ void finalizeHdr(Mat& m)
     else
         m.dataend = m.datalimit = 0;
 }
-
-
 
 #endif //CVRANGEFINDER_MAT_H

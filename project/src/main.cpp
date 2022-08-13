@@ -12,8 +12,8 @@ int main(int argc, const char** argv) {
             break;
         }
         case 3: {
-            CV_Array X(imread(argv[1], 1));
-            CV_Array Y(imread(argv[2], 1));
+            CV_Array X(argv[1], 1);
+            CV_Array Y(argv[2], 1);
             correlation::coefficient_Pearson cof(X, Y);
             cout << cof.get_coefficient() << endl;
             break;
