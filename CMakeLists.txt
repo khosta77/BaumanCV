@@ -25,5 +25,6 @@ add_executable(main
         project/include/CV/Size_validateInputImageSize.h
         project/include/CV/uchar_in_typedef.h
         project/include/CV/Vec.h
+        project/include/CV/UMat.h
 )
 #target_link_libraries( main ${OpenCV_LIBS} )
