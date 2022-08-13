@@ -4,36 +4,37 @@
 #include "vector"
 #include "Scalar.h"
 #include "Size.h"
+#include "Size_validateInputImageSize.h"
 
 class Range;
 class Rect;
 
 class UMat {
 public:
-    //! default constructor
-    UMat(UMatUsageFlags usageFlags = USAGE_DEFAULT);
-
-    //! constructs 2D matrix of the specified size and type
-    // (_type is CV_8UC1, CV_64FC3, CV_32SC(12) etc.)
-    UMat(int rows, int cols, int type, UMatUsageFlags usageFlags = USAGE_DEFAULT);
-
-    UMat(Size size, int type, UMatUsageFlags usageFlags = USAGE_DEFAULT);
-
-    //! constructs 2D matrix and fills it with the specified value _s.
-    UMat(int rows, int cols, int type, const Scalar &s, UMatUsageFlags usageFlags = USAGE_DEFAULT);
-
-    UMat(Size size, int type, const Scalar &s, UMatUsageFlags usageFlags = USAGE_DEFAULT);
-
-    //! constructs n-dimensional matrix
-    UMat(int ndims, const int *sizes, int type, UMatUsageFlags usageFlags = USAGE_DEFAULT);
-
-    UMat(int ndims, const int *sizes, int type, const Scalar &s, UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//    //! default constructor
+//    UMat(UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//
+//    //! constructs 2D matrix of the specified size and type
+//    // (_type is CV_8UC1, CV_64FC3, CV_32SC(12) etc.)
+//    UMat(int rows, int cols, int type, UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//
+//    UMat(Size size, int type, UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//
+//    //! constructs 2D matrix and fills it with the specified value _s.
+//    UMat(int rows, int cols, int type, const Scalar &s, UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//
+//    UMat(Size size, int type, const Scalar &s, UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//
+//    //! constructs n-dimensional matrix
+//    UMat(int ndims, const int *sizes, int type, UMatUsageFlags usageFlags = USAGE_DEFAULT);
+//
+//    UMat(int ndims, const int *sizes, int type, const Scalar &s, UMatUsageFlags usageFlags = USAGE_DEFAULT);
 
     //! copy constructor
     UMat(const UMat &m);
 
-    //! creates a matrix header for a part of the bigger matrix
-    UMat(const UMat &m, const Range &rowRange, const Range &colRange = Range::all());
+//    //! creates a matrix header for a part of the bigger matrix
+//    UMat(const UMat &m, const Range &rowRange, const Range &colRange = Range::all());
 
     UMat(const UMat &m, const Rect &roi);
 
@@ -52,7 +53,7 @@ public:
     //! assignment operators
     UMat &operator=(const UMat &m);
 
-    Mat getMat(AccessFlag flags) const;
+//    Mat getMat(AccessFlag flags) const;
 
     //! returns a new matrix header for the specified row
     UMat row(int y) const;
@@ -154,7 +155,7 @@ public:
     void copySize(const UMat &m);
 
     //! locates matrix header within a parent matrix. See below
-    void locateROI(Size &wholeSize, Point &ofs) const;
+//    void locateROI(Size &wholeSize, Point &ofs) const;
 
     //! moves/resizes the current matrix ROI inside the parent matrix.
     UMat &adjustROI(int dtop, int dbottom, int dleft, int dright);
