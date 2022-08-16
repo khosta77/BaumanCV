@@ -7,6 +7,11 @@
 #include "Size_validateInputImageSize.h"
 #include "UMat.h"
 
+typedef void (*ResizeFunc)( const Mat& src, Mat& dst,
+                            const int* xofs, const void* alpha,
+                            const int* yofs, const void* beta,
+                            int xmin, int xmax, int ksize );
+
 void resize(int src_type,
             const uchar * src_data, size_t src_step, int src_width, int src_height,
             uchar * dst_data, size_t dst_step, int dst_width, int dst_height,
