@@ -1,10 +1,10 @@
 #include "../include/utils.h"
 
-//0 -0.0149817
-//1 -0.057015
-//2 -0.0622271
-//3 -0.0602411
-//4 -0.0565984
+//0 0.0149817
+//1 0.057015
+//2 0.0622271
+//3 0.0602411
+//4 0.0565984
 
 void test() {
     vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
@@ -17,7 +17,7 @@ void test() {
     }
     ofstream fout("test_Pirson_data.txt");
     for (size_t i = 0; i < corr.size(); i++) {
-        fout << i << " " << corr[i] << endl;
+        fout << i << " " << abs(corr[i]) << endl;
     }
     fout.close();
 }
