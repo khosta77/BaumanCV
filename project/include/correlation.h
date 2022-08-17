@@ -13,7 +13,7 @@ namespace correlation {
          * \M - матрица с картинкой1
          * \N - матрица с картинкой2
          * */
-        coefficient_Pearson(const CV_Array &M, const CV_Array &N) {
+        coefficient_Pearson(const Mat &M, const Mat &N) {
             if ((M.getCols() != N.getCols()) && (M.getRows() != N.getRows())) {
                 throw std::exception();
             }
@@ -36,7 +36,7 @@ namespace correlation {
           * \M - матрица с картинкой
           * \return - среднее значение суммы всех ячеейк деленное на общее их колличество
           * */
-        double arithmetic_mean(const CV_Array &M) {
+        double arithmetic_mean(const Mat &M) {
             double m_ = 0;
             for (size_t i = 0; i < M.getRows(); i++) {
                 for (size_t j = 0; j < M.getCols(); j++) {
@@ -51,7 +51,7 @@ namespace correlation {
          * \m_ - Среднее арифметическое
          * \return - один из знаминателей в формуле Пирсона
          * */
-        double mean_square_deviation(const CV_Array &M, const double m_) {
+        double mean_square_deviation(const Mat &M, const double m_) {
             double Rm = 0;
             for (size_t i = 0; i < M.getRows(); i++) {
                 for (size_t j = 0; j < M.getCols(); j++) {
@@ -68,7 +68,7 @@ namespace correlation {
          * \n_ - Среднее арифметическое2
          * \return - числитель из формулы Пирсона
          * */
-        double mean_square_deviation(const CV_Array &M, const double m_, const CV_Array &N, const double n_) {
+        double mean_square_deviation(const Mat &M, const double m_, const Mat &N, const double n_) {
             double Rmn = 0;
             for (size_t i = 0; i < M.getRows(); i++) {
                 for (size_t j = 0; j < M.getCols(); j++) {

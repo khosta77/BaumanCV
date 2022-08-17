@@ -1,16 +1,27 @@
 #ifndef CVRANGEFINDER_CV_TWO_ARRAY_H_
 #define CVRANGEFINDER_CV_TWO_ARRAY_H_
 
-#include "two_array.h"
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
+#include "SMatrix.h"
 #include <iostream>
+#include <fstream>
+#include <cerrno>
+#include <cstddef>
+#include <string>
+#include <stdio.h>
+#include <setjmp.h>
+#include <cstring>
+#include <stdlib.h>
 
-using namespace TwoDimensionalArray;
-using namespace cv;
+extern "C" {  // jpeglib.h
+#include <jconfig.h>
+#include <jpeglib.h>
+}
 
 
-class CV_Array : public Array {
+
+typedef sstd::SMatrix<double> SM;
+
+class Mat : public SM {
 private:
     /** Значения коэффицентов взяты с официальной документации
      * https://docs.opencv.org/3.4/de/d25/imgproc_color_conversions.html
@@ -23,29 +34,44 @@ private:
      * \img - картинка класс Mac
      * \row и  \col - координаты
      * */
-    int get_grey(const Mat &img, size_t row, size_t col) {
-        return Rcof * img.at<Vec3b>(row, col)[0] + Gcof * img.at<Vec3b>(row, col)[1] +
-               Bcof * img.at<Vec3b>(row, col)[2];
+    int get_grey(const double &R, const double &G, const double &B) {
+        return  Rcof * R + Gcof * G + Bcof * B;
     }
 public:
-    /** Конструктор перевода картинки в двумерный массив серого
-     * */
-    CV_Array(const Mat& img);
+    Mat(std::string filename) {
+        struct jpeg_decompress_struct d1;
+        struct jpeg_error_mgr m1;
 
-};
+        d1.err = jpeg_std_error (&m1);
+        jpeg_create_decompress(&d1);
+        FILE *f = fopen(filename.c_str(),"rb");
+        jpeg_stdio_src(&d1, f);
+        jpeg_read_header(&d1, TRUE);
 
-CV_Array::CV_Array(const Mat& img) {
-    if (!img.data) {
-        throw std::exception();
-    }
-    this->rows = (size_t)img.rows;
-    this->cols = (size_t)img.cols;
-    this->matrix = new double[this->rows * this->cols];
-    for (size_t i = 0; i < this->rows; i++) {
-        for (size_t j = 0; j < this->cols; j++) {
-            this->matrix[j + i * this->cols] = get_grey(img, i, j);
+        rows = d1.image_height;
+        cols = d1.image_width;
+        matrix = new double[rows * cols]{};
+
+        int num_s = d1.image_width * d1.image_height * d1.num_components;
+        unsigned char *pBuf = (unsigned char*)malloc(num_s);
+        memset(pBuf, 0, num_s);
+        int i = 0, n_comp = d1.num_components;
+        jpeg_start_decompress(&d1);
+        while (d1.output_scanline < d1.output_height) {
+            // Получить экранную строку
+            i += jpeg_read_scanlines(&d1, (JSAMPARRAY)&(pBuf), 1);
+            for (int j = 0; j < cols; j++) {
+                matrix[j + (i - 1) * cols] = get_grey( pBuf[j * n_comp + 0], pBuf[j * n_comp + 1],
+                                                       pBuf[j * n_comp + 2]);
+            }
         }
+
+        jpeg_finish_decompress(&d1);
+        jpeg_destroy_decompress(&d1);
+        fclose(f);
+        free(pBuf);
     }
+
 };
 
 #endif // CVRANGEFINDER_CV_TWO_ARRAY_H_
