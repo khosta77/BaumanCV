@@ -15,3 +15,7 @@ void test() {
     }
     fout.close();
 }
+
+void test2() {
+//    for ()
+}

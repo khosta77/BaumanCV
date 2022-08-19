@@ -15,5 +15,6 @@
 using namespace std;
 
 void test();
+void test2();
 
 #endif // CVRANGEFINDER_UTILS_H_
