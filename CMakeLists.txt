@@ -5,9 +5,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(main
         project/src/main.cpp
-        project/include/CV_two_array.h
+        project/include/Mat.h
         project/include/SMatrix.h
-        project/include/two_array.h
         project/include/utils.h
         project/src/utils.cpp
         project/include/correlation.h

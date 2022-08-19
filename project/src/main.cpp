@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/CV_two_array.h"
+#include "../include/Mat.h"
 #include "../include/correlation.h"
 #include "../include/utils.h"
 

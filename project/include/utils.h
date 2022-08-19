@@ -1,7 +1,7 @@
 #ifndef CVRANGEFINDER_UTILS_H_
 #define CVRANGEFINDER_UTILS_H_
 
-#include "CV_two_array.h"
+#include "Mat.h"
 #include "correlation.h"
 
 #include <fstream>
