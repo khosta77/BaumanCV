@@ -15,3 +15,7 @@ add_executable(main
 find_package(JPEG REQUIRED)
 target_link_libraries(main PRIVATE ${JPEG_LIBRARIES})
 target_include_directories(main PRIVATE ${JPEG_INCLUDE_DIR})
+
+# Link against wiringPi
+find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
+target_link_libraries(OpenInsulin ${WIRINGPI_LIBRARIES})
