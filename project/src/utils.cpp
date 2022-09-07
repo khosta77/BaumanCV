@@ -18,7 +18,7 @@ void test() {
 
 static Mat push_button() {
 
-    pinMode(LedPin, OUTPUT);
+    pinMode(LEDPIN_SREEN_COMPLIT, OUTPUT);
     while(1) {
         if (digitalRead(INPUT_PIN) == HIGH) {
             system("raspistill -o image.jpg -t 1");
@@ -44,6 +44,7 @@ void test2() {
         double coef;
         double l;
 
+        corr() = default;
         corr(double c, double mm) : coef(c), l(mm) {}
     };
 
@@ -64,9 +65,12 @@ void test2() {
         cout << "coefficient: " << df[i].coef << " length: " << df[i].l << endl;
     }
 
-    corr df_max = std::max(std::begin(df), std::end(df), [](corr df1, corr df2){
-        return (df1.coef < df2.coef);
-    });
+    corr df_max = df[0];
+    for (size_t i = 0; i < df.size(); i++) {
+        if (df[i].coef > df_max.coef) {
+            df_max = df[i];
+        }
+    }
 
     cout << "---> LENGTH: = " << ((1/F) - (1/df_max.l)) << endl;
     cout << "---> MAX COEFFICIENT: = " << df_max.coef << endl;

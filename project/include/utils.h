@@ -14,7 +14,6 @@
 
 using namespace std;
 
-//#define LEDPIN_END 0
 #define LEDPIN_SREEN_COMPLIT 0
 
 #define INPUT_PIN 2
