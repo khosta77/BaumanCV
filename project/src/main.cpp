@@ -1,7 +1,7 @@
 #include <iostream>
-#include "../include/CV_two_array.h"
+#include "../include/Mat.h"
 #include "../include/correlation.h"
-#include "utils.cpp"
+#include "../include/utils.h"
 
 using namespace std;
 
@@ -12,8 +12,8 @@ int main(int argc, const char** argv) {
             break;
         }
         case 3: {
-            CV_Array X(imread(argv[1], 1));
-            CV_Array Y(imread(argv[2], 1));
+            Mat X(argv[1]);
+            Mat Y(argv[2]);
             correlation::coefficient_Pearson cof(X, Y);
             cout << cof.get_coefficient() << endl;
             break;

@@ -1,7 +1,7 @@
 #ifndef CVRANGEFINDER_CORRELATION_H_
 #define CVRANGEFINDER_CORRELATION_H_
 
-#include "CV_two_array.h"
+#include "Mat.h"
 #include <cmath>
 #include <iostream>
 
@@ -13,52 +13,52 @@ namespace correlation {
          * \M - матрица с картинкой1
          * \N - матрица с картинкой2
          * */
-        coefficient_Pearson(const CV_Array &M, const CV_Array &N) {
+        coefficient_Pearson(const Mat &M, const Mat &N) {
             if ((M.getCols() != N.getCols()) && (M.getRows() != N.getRows())) {
                 throw std::exception();
             }
-            double Rm = mean_square_deviation(M, arithmetic_mean(M));
-            double Rn = mean_square_deviation(N, arithmetic_mean(N));
-            double Rmn = mean_square_deviation(M, arithmetic_mean(M), N, arithmetic_mean(N));
-            this->r = Rmn / (Rm * Rn);
+            float Rm = mean_square_deviation(M, arithmetic_mean(M));
+            float Rn = mean_square_deviation(N, arithmetic_mean(N));
+            float Rmn = mean_square_deviation(M, arithmetic_mean(M), N, arithmetic_mean(N));
+            r = (Rmn / (Rm * Rn));
         }
 
         /** \get_coefficient - Возращает коэффицент Пирсона
          * */
-        double get_coefficient() {
-            return this->r;
+        float get_coefficient() {
+            return r;
         }
 
     private:
-        double r = 0;  // Коэффициент Пирсона
+        float r = 0;  // Коэффициент Пирсона
 
          /** \arithmetic_mean - возращает среднее значение
           * \M - матрица с картинкой
           * \return - среднее значение суммы всех ячеейк деленное на общее их колличество
           * */
-        double arithmetic_mean(const CV_Array &M) {
-            double m_ = 0;
-            for (size_t i = 0; i < M.getRows(); i++) {
-                for (size_t j = 0; j < M.getCols(); j++) {
-                    m_ += M(i, j);
-                }
-            }
-            return (m_ / (M.getRows() * M.getCols()));
-        }
+         float arithmetic_mean(const Mat &M) {
+             float m_ = 0;
+             for (size_t i = 0; i < M.getRows(); i++) {
+                 for (size_t j = 0; j < M.getCols(); j++) {
+                     m_ += M(i, j);
+                 }
+             }
+             return (m_ / (M.getRows() * M.getCols()));
+         }
 
         /** \mean_square_deviation - один из знаминателей в формуле Пирсона
          * \M - матрица с картинкой
          * \m_ - Среднее арифметическое
          * \return - один из знаминателей в формуле Пирсона
          * */
-        double mean_square_deviation(const CV_Array &M, const double m_) {
-            double Rm = 0;
+        float mean_square_deviation(const Mat &M, cfloat m_) {
+            float Rm = 0;
             for (size_t i = 0; i < M.getRows(); i++) {
                 for (size_t j = 0; j < M.getCols(); j++) {
-                    Rm += pow((M(i, j) - m_), 2);
+                    Rm += std::pow((M(i, j) - m_), 2);
                 }
             }
-            return sqrt(Rm);
+            return std::sqrt(Rm);
         }
 
         /** \mean_square_deviation - вычисляет числитель из формулы Пирсона
@@ -68,8 +68,8 @@ namespace correlation {
          * \n_ - Среднее арифметическое2
          * \return - числитель из формулы Пирсона
          * */
-        double mean_square_deviation(const CV_Array &M, const double m_, const CV_Array &N, const double n_) {
-            double Rmn = 0;
+        float mean_square_deviation(const Mat &M, cfloat m_, const Mat &N, cfloat n_) {
+            float Rmn = 0;
             for (size_t i = 0; i < M.getRows(); i++) {
                 for (size_t j = 0; j < M.getCols(); j++) {
                     Rmn += ((M(i, j) - m_) * (N(i, j) - n_));
