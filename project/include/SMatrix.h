@@ -38,8 +38,8 @@ namespace sstd {
             const size_t range_y;
         public:
             _out_of_range_matrix(const size_t &out_x, const size_t &out_y, const size_t &x = 0,
-                                   const size_t &y = 0) : out_range_x(out_x), out_range_y(out_y),
-                                   range_x(x), range_y(y) {}
+                                   const size_t &y = 0) : out_range_x(out_x), range_x(x),
+                                   out_range_y(out_y), range_y(y) {}
 
             virtual const size_t& what() noexcept {
                 if (range_x < out_range_x) {
@@ -81,7 +81,7 @@ namespace sstd {
          * \rows - строки
          * \cols - колонки
          * */
-        SMatrix(const size_t rows = 0, const size_t cols = 0) : rows(rows), cols(cols) {
+        SMatrix(const size_t cols = 0, const size_t rows = 0) : cols(cols), rows(rows) {
             matrix = new T[rows * cols]{};
         }
         /** \Array - конструтор копирования
