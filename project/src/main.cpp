@@ -16,7 +16,7 @@ int main(int argc, const char** argv) {
             auto start = std::chrono::steady_clock::now();
             Mat X(argv[1]);
             auto end = std::chrono::steady_clock::now();
-            cout << "Время открытия и конвертации в GRAY: "
+            cout << "    Время открытия и конвертации в GRAY: "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
         }

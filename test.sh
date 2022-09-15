@@ -86,3 +86,7 @@ echo -e "Tест №5 - Время RGB to GRAY"
 ./main ./test_img/test_3_1_2.jpg
 ./main ./test_img/test_3_2_1.jpg
 ./main ./test_img/test_3_2_2.jpg
+
+# Тест №6
+# Колличество фотографий за определенное время
+echo -e "Tест №5 - Колличество фотографий за определенное время"
