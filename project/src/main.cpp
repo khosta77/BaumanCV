@@ -28,10 +28,18 @@ int main(int argc, const char** argv) {
             break;
         }
         case 4: {
+#if 0
             raspicam::RaspiCam Camera;
-            if ( !Camera.open()) {cerr<<"Error opening camera"<<endl;return -1;}
             auto start = std::chrono::steady_clock::now();
             Mat cam(Camera);
+            auto end = std::chrono::steady_clock::now();
+            cout << "    Время снимка и конвертации его в GRAY: "
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
+            break;
+#endif
+            auto start = std::chrono::steady_clock::now();
+            system("raspistill -o img.jpg -n -w 640 -h 480 -t 3");
+            Mat cam("./img.jpg");
             auto end = std::chrono::steady_clock::now();
             cout << "    Время снимка и конвертации его в GRAY: "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;

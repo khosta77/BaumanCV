@@ -11,6 +11,7 @@ LIBS=\
     -lwiringPi \
     -ljpeg \
     -lraspicam
+# добавить еще -lmmal -lmmal_core -lmmal_util , если не будет работать
 SVN=14  # Версия cpp
 
 all: clean $(TARGET)

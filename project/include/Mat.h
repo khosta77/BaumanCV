@@ -11,15 +11,20 @@
 #include <setjmp.h>
 #include <cstring>
 #include <stdlib.h>
+#include <unistd.h>
 
 extern "C" {  // jpeglib.h
 #include <jconfig.h>
 #include <jpeglib.h>
 }
 
+/*
+ * Это сейчас пусть будет 0, тк эта библиотека не корректно работает. Вырезать ее тоже не стоит
+ * */
+#define RASBERRY 0
+#ifdef RASBERRY
 #include <raspicam/raspicam.h>
-#define RASBERRY 1
-
+#endif
 
 typedef const float cfloat;
 typedef unsigned char uchar;
@@ -77,12 +82,15 @@ public:
         fclose(f);
         delete[] pBuf;
     }
+
 #ifdef RASBERRY
     Mat(raspicam::RaspiCam Camera) {
-        Camera.grab();
+        Camera.setFormat(raspicam::RASPICAM_FORMAT_BGR);
+        Camera.open();
+        usleep(3);
         Camera.grab();
         uchar *data = new uchar[Camera.getImageTypeSize(raspicam::RASPICAM_FORMAT_RGB)];
-        Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );
+        Camera.retrieve (data);
         rows = Camera.getHeight();
         cols = Camera.getWidth();
         matrix = new int[rows * cols]{};
