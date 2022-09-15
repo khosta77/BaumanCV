@@ -28,7 +28,14 @@ int main(int argc, const char** argv) {
             break;
         }
         case 4: {
-            // Время фото
+            raspicam::RaspiCam Camera;
+            if ( !Camera.open()) {cerr<<"Error opening camera"<<endl;return -1;}
+            auto start = std::chrono::steady_clock::now();
+            Mat cam(Camera);
+            auto end = std::chrono::steady_clock::now();
+            cout << "    Время снимка и конвертации его в GRAY: "
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
+            break;
         }
     }
     return 0;

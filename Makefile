@@ -9,7 +9,8 @@ SRCS=\
     ./project/include/correlation.h
 LIBS=\
     -lwiringPi \
-    -ljpeg
+    -ljpeg \
+    -lraspicam
 SVN=14  # Версия cpp
 
 all: clean $(TARGET)

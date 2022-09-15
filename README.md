@@ -21,6 +21,14 @@
    sudo apt-get install libjpeg-dev
    sudo apt-get install libjpeg8-dev
    ```
+3. **RaspiCam**
+   ```sh
+   git clone https://github.com/cedricve/raspicam.git
+   cd raspicam
+   mkdir build
+   cd build
+   cmake ..
+   ```
 ## Запуск
 
 ```sh

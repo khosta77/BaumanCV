@@ -17,6 +17,8 @@ extern "C" {  // jpeglib.h
 #include <jpeglib.h>
 }
 
+#include <raspicam/raspicam.h>
+#define RASBERRY 1
 
 
 typedef const float cfloat;
@@ -75,7 +77,25 @@ public:
         fclose(f);
         delete[] pBuf;
     }
-
+#ifdef RASBERRY
+    Mat(raspicam::RaspiCam Camera) {
+        Camera.grab();
+        Camera.grab();
+        uchar *data = new uchar[Camera.getImageTypeSize(raspicam::RASPICAM_FORMAT_RGB)];
+        Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );
+        rows = Camera.getHeight();
+        cols = Camera.getWidth();
+        matrix = new int[rows * cols]{};
+        for (size_t i = 0; i < rows; i++) {
+            for (size_t j = 0; j < cols; j++) {
+                matrix[j + i * cols] = get_grey(float(data[j + i * cols + 2]),
+                                                float(data[j + i * cols + 1]),
+                                                float(data[j + i * cols + 0]));
+            }
+        }
+        delete [] data;
+    }
+#endif
 };
 
 #endif // CVRANGEFINDER_CV_TWO_ARRAY_H_
