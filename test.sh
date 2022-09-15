@@ -76,3 +76,13 @@ if [[ "$res43" < "0.5" ]]; then
 else
     echo "    Коэффицент далек от правды. Result = $res43"
 fi
+
+# Тест №5
+# Время RGB to GRAY
+echo -e "Tест №5 - Время RGB to GRAY"
+./main ./test_img/test_1.jpg
+./main ./test_img/test_2.jpg
+./main ./test_img/test_3_1_1.jpg
+./main ./test_img/test_3_1_2.jpg
+./main ./test_img/test_3_2_1.jpg
+./main ./test_img/test_3_2_2.jpg
