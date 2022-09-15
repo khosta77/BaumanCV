@@ -22,7 +22,7 @@ extern "C" {  // jpeglib.h
 typedef const float cfloat;
 typedef unsigned char uchar;
 
-typedef sstd::SMatrix<uchar> SM;
+typedef sstd::SMatrix<int> SM;
 
 class Mat : public SM {
 private:
@@ -38,8 +38,8 @@ private:
      * \G - зеленный
      * \B - синий
      * */
-    uchar get_grey(cfloat &R, cfloat &G, cfloat &B) {
-        return  uchar(Rcof * R + Gcof * G + Bcof * B);
+    int get_grey(cfloat &R, cfloat &G, cfloat &B) {
+        return  int(Rcof * R + Gcof * G + Bcof * B);
     }
 
 public:
@@ -55,7 +55,7 @@ public:
 
         rows = d1.image_height;
         cols = d1.image_width;
-        matrix = new uchar[rows * cols]{};
+        matrix = new int[rows * cols]{};
 
         uchar *pBuf = new uchar[rows * cols * d1.num_components]{};
 
@@ -64,9 +64,9 @@ public:
             // Получить экранную строку
             i += jpeg_read_scanlines(&d1, (JSAMPARRAY)&(pBuf), 1);
             for (size_t j = 0; j < cols; j++) {
-                matrix[j + (i - 1) * cols] = get_grey( float(pBuf[j * d1.num_components + 0]),
+                matrix[j + (i - 1) * cols] = get_grey( float(pBuf[j * d1.num_components + 2]),
                                                        float(pBuf[j * d1.num_components + 1]),
-                                                       float(pBuf[j * d1.num_components + 2]));
+                                                       float(pBuf[j * d1.num_components + 0]));
             }
         }
 
