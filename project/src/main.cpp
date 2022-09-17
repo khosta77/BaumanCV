@@ -9,7 +9,9 @@ using namespace std;
 int main(int argc, const char** argv) {
     switch (argc) {
         case 1: {
-            test();
+            Mat X("./test_img/test_2.jpg");
+            X.write();
+//            test();
             break;
         }
         case 2: {
