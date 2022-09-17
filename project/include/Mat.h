@@ -23,7 +23,7 @@ extern "C" {  // jpeglib.h
 #define RGB_CHANNEL 3
 
 /* Это сейчас пусть будет 0, тк эта библиотека не корректно работает. Вырезать ее тоже не стоит */
-#define RASBERRY 0
+#define RASBERRY 1
 #ifdef RASBERRY
 #include <raspicam/raspicam.h>
 #endif
@@ -106,9 +106,9 @@ public:
         matrix = new int[rows * cols]{};
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < cols; j++) {
-                matrix[j + i * cols] = get_grey(float(data[j + i * cols + 2]),
-                                                float(data[j + i * cols + 1]),
-                                                float(data[j + i * cols + 0]));
+                matrix[j + i * cols] = get_grey(float(data[j * 3 + 2]),
+                                                float(data[j * 3 + 1]),
+                                                float(data[j * 3 + 0]));
             }
         }
         delete [] data;
@@ -133,7 +133,7 @@ public:
         cinfo.input_components = this->_channels > 1 ? 3 : 1;     // Каналы, RGB 3 ; GRAY 1
         cinfo.in_color_space = this->_channels > 1 ? JCS_RGB : JCS_GRAYSCALE;
         JSAMPLE* image_buffer = new JSAMPLE[cols * rows * _channels]();  /* Указывает на большой массив данных R, G, B-порядка */
-        for (int i = 0; i < cols * rows; i++) {
+        for (size_t i = 0; i < cols * rows; i++) {
             image_buffer[i] = matrix[i];
         }
         jpeg_set_defaults(&cinfo);
