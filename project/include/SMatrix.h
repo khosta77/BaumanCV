@@ -83,9 +83,9 @@ namespace sstd {
     template<typename T>
     class SMatrix {
     protected:
-        T *matrix;   /* Основной массив - он же матрица, т.к. двумерный */
-        size_t cols;      /* Колонки */
         size_t rows;      /* Строки */
+        size_t cols;      /* Колонки */
+        T *matrix;   /* Основной массив - он же матрица, т.к. двумерный */
     public:
 //------------------------------------------------------------------------------------------------------------
         //// Constructor/destructor
@@ -93,7 +93,7 @@ namespace sstd {
          * \rows - строки
          * \cols - колонки
          * */
-        SMatrix(const size_t cols = 0, const size_t rows = 0) : cols(cols), rows(rows) {
+        SMatrix(const size_t cols = 0, const size_t rows = 0) : rows(rows), cols(cols) {
             matrix = new T[rows * cols]{};
         }
         /** \Array - конструтор копирования
@@ -103,7 +103,7 @@ namespace sstd {
             rows = arr.getRows();
             cols = arr.getCols();
             matrix = new T[rows * cols]{};
-            for (size_t i = 0; i < (rows * cols); i++) {
+            for (size_t i = 0; i < (rows * cols); ++i) {
                 matrix[i] = arr.matrix[i];
             }
         }
@@ -117,7 +117,7 @@ namespace sstd {
                 rows = arr.getRows();
                 cols = arr.getCols();
                 matrix = new T[rows * cols]{};
-                for (size_t i = 0; i < (rows * cols); i++) {
+                for (size_t i = 0; i < (rows * cols); ++i) {
                     matrix[i] = arr.matrix[i];
                 }
             }
@@ -133,14 +133,14 @@ namespace sstd {
         /** \getRows - получить колличество строк
          * \return - вернет rows
          * */
-        size_t getRows() const noexcept {
+        inline size_t getRows() const noexcept {
             return rows;
         }
 
         /** \getCols - получить колличество колонок
          * \return - вернет cols
          * */
-        size_t getCols() const noexcept {
+        inline size_t getCols() const noexcept {
             return cols;
         }
 
@@ -149,23 +149,23 @@ namespace sstd {
          * \j - колонка
          * \return - вернет ячейку
          * */
-        T operator()(const size_t i, const size_t j) const {
+        T operator()(const size_t &i, const size_t &j) const {
             if (i >= rows || j >= cols) {
                 throw se::_out_of_range_matrix(j, i, cols, rows);
             }
             return matrix[j + i * cols];
         }
 
-        T& operator()(const size_t i, const size_t j) {
+        T& operator()(const size_t &i, const size_t &j) {
             if (i >= rows || j >= cols) {
                 throw se::_out_of_range_matrix(j, i, cols, rows);
             }
             return (T&)matrix[j + i * cols];
         }
 
-        T& operator[](const size_t k) noexcept { return matrix[k]; }
+        T& operator[](const size_t &k) noexcept { return matrix[k]; }
 
-        T& operator[](const size_t k) const noexcept { return matrix[k]; }
+        T& operator[](const size_t &k) const noexcept { return matrix[k]; }
 //------------------------------------------------------------------------------------------------------------
         void resize(size_t rows = 0, size_t cols = 0) {
             delete[] matrix;

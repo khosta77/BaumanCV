@@ -22,6 +22,7 @@ void test3() {
         tst_jpg[i] = PATH + tst_jpg[i] + JPG;
     }
     vector<long> time;
+    Mat X(tst_jpg[0]);
     for (size_t i = 0; i < tst_jpg.size(); ++i) {
         auto start = std::chrono::steady_clock::now();
         Mat A(tst_jpg[i]);

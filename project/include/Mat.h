@@ -31,7 +31,7 @@ extern "C" {  // jpeglib.h
 typedef const float cfloat;
 typedef unsigned char uchar;
 
-typedef sstd::SMatrix<int> SM;
+typedef sstd::SMatrix<uchar> SM;
 
 class Mat : public SM {
 private:
@@ -40,6 +40,7 @@ private:
      * картинки.
      * */
     int _channels;
+
     /** Значения коэффицентов взяты с официальной документации
      * https://docs.opencv.org/3.4/de/d25/imgproc_color_conversions.html
      * */
@@ -52,16 +53,15 @@ private:
      * \G - зеленный
      * \B - синий
      * */
-    int get_grey(cfloat &R, cfloat &G, cfloat &B) {
-        return  int(Rcof * R + Gcof * G + Bcof * B);
+    uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
+        return  uchar(R * float(0.299) + G * float(0.587) + B * float(0.114));
     }
 public:
+    Mat() {}
     Mat(std::string filename) {
         struct jpeg_decompress_struct d1;
         struct jpeg_error_mgr m1;
-        this->filename = "test.jpg";
-        this->_channels = GRAY_CHANNEL;
-        d1.err = jpeg_std_error (&m1);
+        d1.err = jpeg_std_error(&m1);
         jpeg_create_decompress(&d1);
         FILE *f = fopen(filename.c_str(),"rb");
         jpeg_stdio_src(&d1, f);
@@ -69,25 +69,26 @@ public:
 
         rows = d1.image_height;
         cols = d1.image_width;
-        matrix = new int[rows * cols]{};
+        matrix = new uchar[rows * cols]{};
+        this->filename = "test.jpg";
+        this->_channels = GRAY_CHANNEL;
 
-        uchar *pBuf = new uchar[rows * cols * d1.num_components]{};
 
         jpeg_start_decompress(&d1);
+        uchar *pBuf = new uchar[rows * cols * d1.num_components]{};
         for (size_t i = 0; d1.output_scanline < d1.output_height;) {
             // Получить экранную строку
             i += jpeg_read_scanlines(&d1, (JSAMPARRAY)&(pBuf), 1);
-            for (size_t j = 0; j < cols; j++) {
-                matrix[j + (i - 1) * cols] = get_grey( float(pBuf[j * d1.num_components + 2]),
-                                                       float(pBuf[j * d1.num_components + 1]),
-                                                       float(pBuf[j * d1.num_components + 0]));
+            for (size_t j = 0; j < cols; ++j) {
+                matrix[j + (i - 1) * cols] = get_grey(pBuf[j * d1.num_components + 2],
+                                                      pBuf[j * d1.num_components + 1],
+                                                      pBuf[j * d1.num_components + 0]);
             }
         }
 
         jpeg_finish_decompress(&d1);
         jpeg_destroy_decompress(&d1);
         fclose(f);
-
         delete[] pBuf;
     }
 
@@ -102,7 +103,7 @@ public:
         Camera.retrieve(data);
         rows = Camera.getHeight();
         cols = Camera.getWidth();
-        matrix = new int[rows * cols]{};
+        matrix = new uchar[rows * cols]{};
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < cols; j++) {
                 matrix[j + i * cols] = get_grey(float(data[j + i * cols  + 2]),
@@ -113,6 +114,10 @@ public:
         delete [] data;
     }
 #endif
+
+    ~Mat() {
+        filename.clear();
+    }
 
     void write() {
         if (filename.empty()) {
