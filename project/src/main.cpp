@@ -8,8 +8,8 @@ using namespace std;
 
 int main(int argc, const char** argv) {
     switch (argc) {
-#if 0
         case 1: {
+#if 0
             auto start = std::chrono::steady_clock::now();
             Mat X("./to_test.jpg");
             try {
@@ -21,8 +21,8 @@ int main(int argc, const char** argv) {
             cout << "    Время открытия и конвертации в GRAY, сохранения: "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
-#elif
-            test();
+#else
+            test3();
             break;
 #endif
         }

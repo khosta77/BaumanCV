@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #define PATH "./img/"
 #define JPG ".jpg"
@@ -22,5 +23,6 @@ using namespace std;
 
 void test();
 void test2();
+void test3();
 
 #endif // CVRANGEFINDER_UTILS_H_

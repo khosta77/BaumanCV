@@ -16,6 +16,36 @@ void test() {
     fout.close();
 }
 
+void test3() {
+    vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    for (size_t i = 0; i < tst_jpg.size(); ++i) {
+        tst_jpg[i] = PATH + tst_jpg[i] + JPG;
+    }
+    vector<long> time;
+    for (size_t i = 0; i < tst_jpg.size(); ++i) {
+        auto start = std::chrono::steady_clock::now();
+        Mat A(tst_jpg[i]);
+        auto end = std::chrono::steady_clock::now();
+        auto t = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        time.push_back(t);
+        std::cout << "    Время открытия и конвертации в GRAY, сохранения: " << t << " ms" << std::endl;
+    }
+    ofstream fout("test_time_data.txt", ios::out | ios::app);
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    fout << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << std::endl;
+    for (size_t i = 0; i < time.size(); i++) {
+        fout << (i + 1)<< " " << time[i] <<  std::endl;
+    }
+    long a = 0;
+    for (size_t i = 0; i < time.size(); ++i) {
+        a += time[i];
+    }
+    a = (a/time.size());
+    fout << "Среднее значение: " << a << std::endl;
+    fout.close();
+}
+
 static Mat push_button() {
 
     pinMode(LEDPIN_SREEN_COMPLIT, OUTPUT);
