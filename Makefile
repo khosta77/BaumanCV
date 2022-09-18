@@ -9,12 +9,14 @@ SRCS=\
     ./project/include/correlation.h
 LIBS=\
     -lwiringPi \
-    -ljpeg
+    -ljpeg \
+    -lraspicam
+# добавить еще -lmmal -lmmal_core -lmmal_util , если не будет работать
 SVN=14  # Версия cpp
 
 all: clean $(TARGET)
 
-$(TARGET):
+$(TARGET): # -Wall -Wextra -Werror -ansi
 	$(CC) -Wall -Wextra -Werror -ansi -std=c++$(SVN) -lm -o $(TARGET) $(addprefix -I,$(HDRS)) $(CFLAGS) $(SRCS) $(LIBS)
 
 build: $(TARGET)
