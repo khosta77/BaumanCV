@@ -23,7 +23,7 @@ extern "C" {  // jpeglib.h
 #define RGB_CHANNEL 3
 
 /* Это сейчас пусть будет 0, тк эта библиотека не корректно работает. Вырезать ее тоже не стоит */
-#define RASBERRY 1
+#define RASBERRY 0
 #ifdef RASBERRY
 #include <raspicam/raspicam.h>
 #endif
@@ -55,7 +55,6 @@ private:
     int get_grey(cfloat &R, cfloat &G, cfloat &B) {
         return  int(Rcof * R + Gcof * G + Bcof * B);
     }
-    std::vector<uchar>* m_buf;
 public:
     Mat(std::string filename) {
         struct jpeg_decompress_struct d1;
@@ -106,9 +105,9 @@ public:
         matrix = new int[rows * cols]{};
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < cols; j++) {
-                matrix[j + i * cols] = get_grey(float(data[i * cols + j * 3 + 2]),
-                                                float(data[i * cols + j * 3 + 1]),
-                                                float(data[i * cols + j * 3 + 0]));
+                matrix[j + i * cols] = get_grey(float(data[j + i * cols  + 2]),
+                                                float(data[j + i * cols  + 1]),
+                                                float(data[j + i * cols  + 0]));
             }
         }
         delete [] data;
@@ -117,7 +116,7 @@ public:
 
     void write() {
         if (filename.empty()) {
-            throw;
+            throw sstd::se::_without_file();
         }
         struct jpeg_compress_struct cinfo;  /* Шаг 1: выделите и инициализируйте объект сжатия JPEG */
         struct jpeg_error_mgr jerr;

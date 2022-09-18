@@ -9,7 +9,16 @@ using namespace std;
 int main(int argc, const char** argv) {
     switch (argc) {
         case 1: {
-            test();
+            auto start = std::chrono::steady_clock::now();
+            Mat X("./test_img/test_1.jpg");
+            try {
+                X.write();
+            } catch (sstd::se::_without_file &err) {
+                err.print();
+            }
+            auto end = std::chrono::steady_clock::now();
+            cout << "    Время открытия и конвертации в GRAY, сохранения: "
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
         }
         case 2: {
@@ -28,7 +37,7 @@ int main(int argc, const char** argv) {
             break;
         }
         case 4: {
-#if 1
+#if RASBERRY
             raspicam::RaspiCam Camera;
             auto start = std::chrono::steady_clock::now();
             Mat cam(Camera);
@@ -46,6 +55,10 @@ int main(int argc, const char** argv) {
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
 #endif
+        }
+        case 5: {
+            test();
+            break;
         }
     }
     return 0;
