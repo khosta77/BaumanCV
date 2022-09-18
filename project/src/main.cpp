@@ -8,9 +8,10 @@ using namespace std;
 
 int main(int argc, const char** argv) {
     switch (argc) {
+#if 0
         case 1: {
             auto start = std::chrono::steady_clock::now();
-            Mat X("./test_img/test_1.jpg");
+            Mat X("./to_test.jpg");
             try {
                 X.write();
             } catch (sstd::se::_without_file &err) {
@@ -20,6 +21,10 @@ int main(int argc, const char** argv) {
             cout << "    Время открытия и конвертации в GRAY, сохранения: "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
+#elif
+            test();
+            break;
+#endif
         }
         case 2: {
             auto start = std::chrono::steady_clock::now();
@@ -55,10 +60,6 @@ int main(int argc, const char** argv) {
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
 #endif
-        }
-        case 5: {
-            test();
-            break;
         }
     }
     return 0;
