@@ -106,9 +106,9 @@ public:
         matrix = new int[rows * cols]{};
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < cols; j++) {
-                matrix[j + i * cols] = get_grey(float(data[j * 3 + 2]),
-                                                float(data[j * 3 + 1]),
-                                                float(data[j * 3 + 0]));
+                matrix[j + i * cols] = get_grey(float(data[i * cols + j * 3 + 2]),
+                                                float(data[i * cols + j * 3 + 1]),
+                                                float(data[i * cols + j * 3 + 0]));
             }
         }
         delete [] data;
