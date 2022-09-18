@@ -63,6 +63,18 @@ namespace sstd {
             }
         };
 
+        /** \class - Ошибка, при отстуствие имени сохранения
+         * */
+        class _without_file : public std::exception {
+            const std::string error;
+        public:
+            _without_file() {}
+
+            virtual void print() noexcept {
+                std::cout << "The object being saved does not have a name" << std::endl;
+            }
+        };
+
     };  // Stepan Exception
 
     /*

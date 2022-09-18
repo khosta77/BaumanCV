@@ -9,7 +9,16 @@ using namespace std;
 int main(int argc, const char** argv) {
     switch (argc) {
         case 1: {
-            test();
+            auto start = std::chrono::steady_clock::now();
+            Mat X("./test_img/test_1.jpg");
+            try {
+                X.write();
+            } catch (sstd::se::_without_file &err) {
+                err.print();
+            }
+            auto end = std::chrono::steady_clock::now();
+            cout << "    Время открытия и конвертации в GRAY, сохранения: "
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
         }
         case 2: {
@@ -28,21 +37,27 @@ int main(int argc, const char** argv) {
             break;
         }
         case 4: {
-#if 0
+#if RASBERRY
             raspicam::RaspiCam Camera;
             auto start = std::chrono::steady_clock::now();
             Mat cam(Camera);
             auto end = std::chrono::steady_clock::now();
+            cam.write("test.jpg");
             cout << "    Время снимка и конвертации его в GRAY: "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
-#endif
+#else
             auto start = std::chrono::steady_clock::now();
             system("raspistill -o img.jpg -n -w 640 -h 480 -t 3");
             Mat cam("./img.jpg");
             auto end = std::chrono::steady_clock::now();
             cout << "    Время снимка и конвертации его в GRAY: "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
+            break;
+#endif
+        }
+        case 5: {
+            test();
             break;
         }
     }
