@@ -29,7 +29,7 @@ void test3() {
         auto end = std::chrono::steady_clock::now();
         auto t = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         time.push_back(t);
-        std::cout << "    Время открытия и конвертации в GRAY, сохранения: " << t << " ms" << std::endl;
+        std::cout << "    Время открытия и конвертации в GRAY: " << t << " ms" << std::endl;
     }
     ofstream fout("test_time_data.txt", ios::out | ios::app);
     auto now = std::chrono::system_clock::now();
