@@ -43,7 +43,7 @@ private:
      * \G - зеленный
      * \B - синий
      * */
-     uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
+     inline uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
         return  uchar(R * float(0.299) + G * float(0.587) + B * float(0.114));
     }
 public:
