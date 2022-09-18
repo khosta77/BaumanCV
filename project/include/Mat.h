@@ -35,29 +35,25 @@ typedef sstd::SMatrix<uchar> SM;
 
 class Mat : public SM {
 private:
-    std::string filename;
-    /* По уолчанию картинка тут же конвертируется в GRAY, но эта переменная позволит в будущем использовать и RGB
-     * картинки.
-     * */
-    int _channels;
-
-    /** Значения коэффицентов взяты с официальной документации
-     * https://docs.opencv.org/3.4/de/d25/imgproc_color_conversions.html
-     * */
-    cfloat Rcof = 0.299;
-    cfloat Gcof = 0.587;
-    cfloat Bcof = 0.114;
+    std::string filename;  /* Куда будет сохронятся картинка */
+    int _channels;  /* По уолчанию картинка конвертируется в GRAY, но в будущем возможно использовать и RGB */
 
     /** \brief - метод переводит RGB изображение в серый
      * \R - красный
      * \G - зеленный
      * \B - синий
      * */
-    uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
+     uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
         return  uchar(R * float(0.299) + G * float(0.587) + B * float(0.114));
     }
 public:
+    /** \brief - Простой конструктор
+     * */
     Mat() {}
+
+    /** \brief - считывает из файла картинку и переводит ее в GRAY
+     * \param filename - .jpg файл
+     * */
     Mat(std::string filename) {
         struct jpeg_decompress_struct d1;
         struct jpeg_error_mgr m1;
@@ -93,6 +89,10 @@ public:
     }
 
 #ifdef RASBERRY
+    /** \brief - конструктор который делает снимок и переводит его в GRAY
+     * НЕ РАБОТАЕТ, он не понятно что фотографирует
+     * \param Camera - камера, raspicam
+     * */
     Mat(raspicam::RaspiCam Camera) {
         Camera.setFormat(raspicam::RASPICAM_FORMAT_BGR);
         Camera.open();
@@ -115,10 +115,14 @@ public:
     }
 #endif
 
+    /** \brief - деструктор
+     * */
     ~Mat() {
         filename.clear();
     }
 
+    /** \brief - сохраняет GRAY картинку.
+     * */
     void write() {
         if (filename.empty()) {
             throw sstd::se::_without_file();
@@ -155,6 +159,9 @@ public:
         fclose(outfile);
     }
 
+    /** \brief - сохраняет GRAY картинку по названию.
+     * \param file - имя файла
+     * */
     void write(std::string file) {
         filename = file;
         write();
