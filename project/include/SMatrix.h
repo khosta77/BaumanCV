@@ -93,7 +93,7 @@ namespace sstd {
          * \rows - строки
          * \cols - колонки
          * */
-        SMatrix(const size_t cols = 0, const size_t rows = 0) : rows(rows), cols(cols) {
+        SMatrix(const size_t &cols = 0, const size_t &rows = 0) : rows(rows), cols(cols) {
             matrix = new T[rows * cols]{};
         }
         /** \Array - конструтор копирования
@@ -167,7 +167,7 @@ namespace sstd {
 
         T& operator[](const size_t &k) const noexcept { return matrix[k]; }
 //------------------------------------------------------------------------------------------------------------
-        void resize(size_t rows = 0, size_t cols = 0) {
+        void resize(const size_t &rows = 0, const size_t &cols = 0) {
             delete[] matrix;
             this->rows = rows;
             this->cols = cols;

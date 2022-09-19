@@ -28,12 +28,10 @@ extern "C" {  // jpeglib.h
 #include <raspicam/raspicam.h>
 #endif
 
-typedef const float cfloat;
 typedef unsigned char uchar;
 
-typedef sstd::SMatrix<uchar> SM;
 
-class Mat : public SM {
+class Mat : public sstd::SMatrix<uchar> {
 private:
     std::string filename;  /* Куда будет сохронятся картинка */
     int _channels;  /* По уолчанию картинка конвертируется в GRAY, но в будущем возможно использовать и RGB */
@@ -54,7 +52,7 @@ public:
     /** \brief - считывает из файла картинку и переводит ее в GRAY
      * \param filename - .jpg файл
      * */
-    Mat(std::string filename) {
+    Mat(const std::string &filename) {
         struct jpeg_decompress_struct d1;
         struct jpeg_error_mgr m1;
         d1.err = jpeg_std_error(&m1);
@@ -162,7 +160,7 @@ public:
     /** \brief - сохраняет GRAY картинку по названию.
      * \param file - имя файла
      * */
-    void write(std::string file) {
+    void write(const std::string &file) {
         filename = file;
         write();
     }
