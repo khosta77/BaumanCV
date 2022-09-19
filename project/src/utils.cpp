@@ -106,3 +106,20 @@ void test2() {
     cout << "---> LENGTH: = " << ((1/F) - (1/df_max.l)) << endl;
     cout << "---> MAX COEFFICIENT: = " << df_max.coef << endl;
 }
+
+void test4() {
+    vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    vector<double> corr;
+    for (size_t i = 0; i < tst_jpg.size() - 1; i += 2) {
+        Mat X((PATH + tst_jpg[i] + JPG));
+        Mat Y((PATH + tst_jpg[i + 1] + JPG));
+        auto start = std::chrono::steady_clock::now();
+        correlation::coefficient_Pearson cof(X, Y);
+        corr.push_back(cof.get_coefficient());
+        auto end = std::chrono::steady_clock::now();
+        std::cout << "    Время открытия и конвертации в GRAY: "
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+                  << " ms" << std::endl;
+    }
+    corr.clear();
+}

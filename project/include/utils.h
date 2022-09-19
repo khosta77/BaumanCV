@@ -24,5 +24,6 @@ using namespace std;
 void test();
 void test2();
 void test3();
+void test4();
 
 #endif // CVRANGEFINDER_UTILS_H_

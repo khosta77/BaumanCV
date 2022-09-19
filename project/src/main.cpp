@@ -11,7 +11,7 @@ int main(int argc, const char** argv) {
         case 1: {
 #if 0
             auto start = std::chrono::steady_clock::now();
-            Mat X("./to_test.jpg");
+            Mat X("./test_img/test_1.jpg");
             try {
                 X.write();
             } catch (sstd::se::_without_file &err) {
@@ -60,6 +60,10 @@ int main(int argc, const char** argv) {
                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
             break;
 #endif
+        }
+        case 5: {
+            test4();
+            break;
         }
     }
     return 0;

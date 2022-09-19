@@ -1,5 +1,5 @@
 #!/bin/bash
-make
+#make
 
 # Тест №1
 # Две одинаковые картинки
@@ -78,8 +78,13 @@ else
 fi
 
 # Тест №5
+# Время корреляции
+echo -e "Tест №5 - Время корреляции"
+./main 1 2 3 4
+
+# Тест №6
 # Время RGB to GRAY
-echo -e "Tест №5 - Время RGB to GRAY"
+echo -e "Tест №6 - Время RGB to GRAY"
 ./main ./test_img/test_1.jpg
 ./main ./test_img/test_2.jpg
 ./main ./test_img/test_3_1_1.jpg
@@ -87,15 +92,23 @@ echo -e "Tест №5 - Время RGB to GRAY"
 ./main ./test_img/test_3_2_1.jpg
 ./main ./test_img/test_3_2_2.jpg
 
-echo -e "Tест №5.5 - Время RGB to GRAY, снимки одного формата"
+# Тест №8
+# Время RGB to GRAY, снимки одного формата
+echo -e "Tест №7 - Время RGB to GRAY, снимки одного формата"
 ./main
-# Тест №6
-# Колличество фотографий за определенное время
-echo -e "Tест №6 - Колличество фотографий за определенное время (размер снимка 640х480)"
-./main 1 2 3
-./main 1 2 3
-./main 1 2 3
-./main 1 2 3
-./main 1 2 3
-./main 1 2 3
-./main 1 2 3
+
+
+# Тест №8
+# Время снимка и конвертиция в GRAY
+type raspistill 2> /dev/null
+if [ $? -eq 0 ]
+then
+  echo -e "Tест №8 - Время снимка и конвертиция в GRAY (размер снимка 640х480)"
+  ./main 1 2 3
+  ./main 1 2 3
+  ./main 1 2 3
+  ./main 1 2 3
+  ./main 1 2 3
+  ./main 1 2 3
+  ./main 1 2 3
+fi
