@@ -1,125 +1,124 @@
-#include "../include/utils.h"
+#include "../include/test.h"
 
-void test() {
-    vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    vector<double> corr;
-    for (size_t i = 0; i < tst_jpg.size() - 1; i += 2) {
-        Mat X((PATH + tst_jpg[i] + JPG));
-        Mat Y((PATH + tst_jpg[i + 1] + JPG));
-        correlation::coefficient_Pearson cof(X, Y);
-        corr.push_back(cof.get_coefficient());
+using namespace std;
+
+int getTestCode(const std::string& cmd) {
+    if (cmd == "identicalPhotos") {
+        return IDENTICAL_PHOTOS;
     }
-    ofstream fout("test_Pirson_data.txt");
-    for (size_t i = 0; i < corr.size(); i++) {
-        fout << i << " " << abs(corr[i]) << endl;
+    if (cmd == "defferentPhotos") {
+        return DEFFERENT_PHOTOS;
     }
-    fout.close();
+    if (cmd == "defferentAngels") {
+        return DEFFERENT_ANGLES;
+    }
+    if (cmd == "blur") {
+        return BLUR;
+    }
+    if (cmd == "correlation") {
+        return CORRELATION_TIME;
+    }
+    if (cmd == "RGBtoGRAY") {
+        return RGB_TO_GRAY;
+    }
+#ifdef CAMERA_TEST
+    if (cmd == "snapshot_time") {
+        return SNAPSHOT_TIME;
+    }
+    if (cmd == "snapshot_time_to_gray") {
+        return SNAPSHOT_TIME_TO_GRAY;
+    }
+#endif
+    return 0;
 }
 
-void test3() {
-    vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    for (size_t i = 0; i < tst_jpg.size(); ++i) {
-        tst_jpg[i] = PATH + tst_jpg[i] + JPG;
-    }
-    vector<long> time;
-    Mat X(tst_jpg[0]);
-    for (size_t i = 0; i < tst_jpg.size(); ++i) {
+static void outKT(const std::string &l, const std::string &r) {
+    Mat Z(l);
+    cout << "  Размер фото: " << Z.getCols() << "x" << Z.getRows() << endl;
+    for (size_t i = 0; i < TEST_PERIOD; ++i) {
         auto start = std::chrono::steady_clock::now();
-        Mat A(tst_jpg[i]);
+        Mat X(l);
+        Mat Y(r);
+        auto end = std::chrono::steady_clock::now();
+        auto t1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        start = std::chrono::steady_clock::now();
+        correlation::coefficient_Pearson cof(X, Y);
+        end = std::chrono::steady_clock::now();
+        auto t2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "    Коэффициент: " << cof.get_coefficient() << ", время rgbToGray " << t1 << " ms, "
+                  << "время корреляции: " << t2 << " ms" << std::endl;
+    }
+}
+
+static void outRGBtoGRAY(const std::string &fn) {
+    std::cout << "  " << fn << std::endl;
+    for (size_t i = 0; i < TEST_PERIOD; ++i) {
+        auto start = std::chrono::steady_clock::now();
+        Mat X(fn);
         auto end = std::chrono::steady_clock::now();
         auto t = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        time.push_back(t);
-        std::cout << "    Время открытия и конвертации в GRAY: " << t << " ms" << std::endl;
-    }
-    ofstream fout("test_time_data.txt", ios::out | ios::app);
-    auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-    fout << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << std::endl;
-    for (size_t i = 0; i < time.size(); i++) {
-        fout << (i + 1)<< " " << time[i] <<  std::endl;
-    }
-    long a = 0;
-    for (size_t i = 0; i < time.size(); ++i) {
-        a += time[i];
-    }
-    a = (a/time.size());
-    fout << "Среднее значение: " << a << std::endl;
-    fout.close();
-}
-
-static Mat push_button() {
-
-    pinMode(LEDPIN_SREEN_COMPLIT, OUTPUT);
-    while(1) {
-        if (digitalRead(INPUT_PIN) == HIGH) {
-            system("raspistill -o image.jpg -t 1");
-            Mat mat("./image.jpg");
-            system("rm -rf ./image.jpg");
-            digitalWrite(LEDPIN_SREEN_COMPLIT, LOW);
-            delay(1000);
-            digitalWrite(LEDPIN_SREEN_COMPLIT, HIGH);
-            delay(1000);
-            digitalWrite(LEDPIN_SREEN_COMPLIT, LOW);
-            return mat;
-        }
+        std::cout << "    Фото(" << X.getCols() << "x" << X.getRows() << ") время RGBtoGRAY: " << t << " ms" << std::endl;
     }
 }
 
-void test2() {
-    if(wiringPiSetup() == -1) {
-        cout << "setup wiringPi failed !\n" << endl;
-        return;
-    }
-
-    struct corr {
-        double coef;
-        double l;
-
-        corr() = default;
-        corr(double c, double mm) : coef(c), l(mm) {}
-    };
-
-    vector<corr> df;
-    double t;
-//    pinMode(LEDPIN_END, OUTPUT);
-    pinMode(LEDPIN_SREEN_COMPLIT, OUTPUT);
-
-    for (size_t i = 0; i < 6; i++) {
-        Mat A = push_button();
-        Mat B = push_button();
-        correlation::coefficient_Pearson cof(A, B);
-        cin >> t;
-        df.push_back(corr(cof.get_coefficient(), t));
-    }
-
-    for (size_t i = 0; i < df.size(); i++) {
-        cout << "coefficient: " << df[i].coef << " length: " << df[i].l << endl;
-    }
-
-    corr df_max = df[0];
-    for (size_t i = 0; i < df.size(); i++) {
-        if (df[i].coef > df_max.coef) {
-            df_max = df[i];
-        }
-    }
-
-    cout << "---> LENGTH: = " << ((1/F) - (1/df_max.l)) << endl;
-    cout << "---> MAX COEFFICIENT: = " << df_max.coef << endl;
+void identicalPhotosTest() {
+    outKT("./test_img/test_1.jpg", "./test_img/test_1.jpg");
 }
 
-void test4() {
-    vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    vector<double> corr;
+void defferentPhotosTest() {
+    outKT("./test_img/test_1.jpg", "./test_img/test_2.jpg");
+}
+
+void defferentAngelsTest() {
+    outKT("./test_img/test_3_1_1.jpg", "./test_img/test_3_1_2.jpg");
+    outKT("./test_img/test_3_2_1.jpg", "./test_img/test_3_2_2.jpg");
+}
+
+void blurTest() {
+    outKT("./test_img/test_4_1_1.jpg", "./test_img/test_4_1_2.jpg");
+    outKT("./test_img/test_4_2_1.jpg", "./test_img/test_4_2_2.jpg");
+    outKT("./test_img/test_4_3_1.jpg", "./test_img/test_4_3_2.jpg");
+}
+
+void correlationTimeTest() {
+    std::vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    std::vector<double> corr;
     for (size_t i = 0; i < tst_jpg.size() - 1; i += 2) {
-        Mat X((PATH + tst_jpg[i] + JPG));
-        Mat Y((PATH + tst_jpg[i + 1] + JPG));
-        auto start = std::chrono::steady_clock::now();
-        correlation::coefficient_Pearson cof(X, Y);
-        corr.push_back(cof.get_coefficient());
-        auto end = std::chrono::steady_clock::now();
-        std::cout << "    Время открытия и конвертации в GRAY: "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-                  << " ms" << std::endl;
+        std::string l = ("./img/" + tst_jpg[i] + ".jpg");
+        std::string r = ("./img/" + tst_jpg[i + 1] + ".jpg");
+        std::cout << "  Пара: " << i << "-" << (i + 1) << std::endl;
+        for (size_t j = 0; j < TEST_PERIOD; ++j) {
+            Mat X(l);
+            Mat Y(r);
+            auto start = std::chrono::steady_clock::now();
+            correlation::coefficient_Pearson cof(X, Y);
+            corr.push_back(cof.get_coefficient());
+            auto end = std::chrono::steady_clock::now();
+            std::cout << "    Время корреляции(" << X.getCols() <<"x" << X.getRows() << "): "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+                      << " ms" << std::endl;
+        }
     }
     corr.clear();
 }
+
+void rgbToGrayTest() {
+    outRGBtoGRAY("./test_img/test_1.jpg");
+    outRGBtoGRAY("./test_img/test_2.jpg");
+    outRGBtoGRAY("./test_img/test_3_1_1.jpg");
+    outRGBtoGRAY("./test_img/test_3_1_2.jpg");
+    outRGBtoGRAY("./test_img/test_3_2_1.jpg");
+    outRGBtoGRAY("./test_img/test_3_2_2.jpg");
+}
+
+#ifdef CAMERA_TEST
+void snapshotTimeTest() {
+     // TODO: тест снимков разных рамзеров
+}
+
+void snapshotTimeToGray() {
+    // TODO: ??? , тк снимки будут анализироватся после того как будет получен весь массив, то одновременное время бесполезно
+}
+#endif
+
+
