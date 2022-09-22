@@ -2,69 +2,55 @@
 #include <chrono>
 #include "../include/Mat.h"
 #include "../include/correlation.h"
-#include "../include/utils.h"
+#include "../include/test.h"
 
 using namespace std;
 
+void runTest(int argc, const char **argv);
+
 int main(int argc, const char** argv) {
-    switch (argc) {
-        case 1: {
-#if 0
-            auto start = std::chrono::steady_clock::now();
-            Mat X("./test_img/test_1.jpg");
-            try {
-                X.write();
-            } catch (sstd::se::_without_file &err) {
-                err.print();
-            }
-            auto end = std::chrono::steady_clock::now();
-            cout << "    Время открытия и конвертации в GRAY, сохранения: "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
+    runTest(argc, argv);
+    return 0;
+}
+
+void runTest(int argc, const char **argv) {
+    if (argc != 2)
+        return;
+    switch (getTestCode(string(argv[1]))) {
+        case IDENTICAL_PHOTOS: {
+            identicalPhotosTest();
             break;
-#else
-            test3();
+        }
+        case DEFFERENT_PHOTOS: {
+            defferentPhotosTest();
             break;
+        }
+        case DEFFERENT_ANGLES: {
+            defferentAngelsTest();
+            break;
+        }
+        case BLUR: {
+            blurTest();
+            break;
+        }
+        case CORRELATION_TIME: {
+            correlationTimeTest();
+            break;
+        }
+        case RGB_TO_GRAY: {
+            rgbToGrayTest();
+            break;
+        }
+#ifdef CAMERA_TEST
+        case SNAPSHOT_TIME: {
+            break;
+        }
+        case SNAPSHOT_TIME_TO_GRAY: {
+            break;
+        }
 #endif
-        }
-        case 2: {
-            auto start = std::chrono::steady_clock::now();
-            Mat X(argv[1]);
-            auto end = std::chrono::steady_clock::now();
-            cout << "    Время открытия и конвертации в GRAY: "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
-            break;
-        }
-        case 3: {
-            Mat X(argv[1]);
-            Mat Y(argv[2]);
-            correlation::coefficient_Pearson cof(X, Y);
-            cout << cof.get_coefficient() << endl;
-            break;
-        }
-        case 4: {
-#if RASBERRY
-            raspicam::RaspiCam Camera;
-            auto start = std::chrono::steady_clock::now();
-            Mat cam(Camera);
-            auto end = std::chrono::steady_clock::now();
-            cam.write("test.jpg");
-            cout << "    Время снимка и конвертации его в GRAY: "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
-            break;
-#else
-            auto start = std::chrono::steady_clock::now();
-            system("raspistill -o img.jpg -n -w 640 -h 480 -t 3");
-            Mat cam("./img.jpg");
-            auto end = std::chrono::steady_clock::now();
-            cout << "    Время снимка и конвертации его в GRAY: "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << endl;
-            break;
-#endif
-        }
-        case 5: {
-            test4();
-            break;
+        default: {
+            cout << "Тест не распознан!" << endl;
         }
     }
-    return 0;
 }
