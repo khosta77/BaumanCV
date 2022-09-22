@@ -4,13 +4,13 @@ SRCS=\
 	./project/src/main.cpp \
     ./project/include/Mat.h \
     ./project/include/SMatrix.h \
-    ./project/include/utils.h \
-    ./project/src/utils.cpp \
+    ./project/include/test.h \
+    ./project/src/test.cpp \
     ./project/include/correlation.h
 LIBS=\
     -lwiringPi \
-    -ljpeg \
-    -lraspicam
+    -ljpeg
+
 # добавить еще -lmmal -lmmal_core -lmmal_util , если не будет работать
 SVN=17  # Версия cpp
 
