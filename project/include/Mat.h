@@ -165,6 +165,9 @@ public:
         write();
     }
 
+    inline size_t size() const noexcept {
+        return rows * cols;
+    }
 };
 
 #endif // CVRANGEFINDER_CV_TWO_ARRAY_H_
