@@ -42,10 +42,11 @@ static void outKT(const std::string &l, const std::string &r) {
         auto end = std::chrono::steady_clock::now();
         auto t1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         start = std::chrono::steady_clock::now();
-        correlation::coefficient_Pearson cof(X, Y);
+        correlation::coefficient_Pearson cof;
+        float k = cof.get_coefficient(X, Y);
         end = std::chrono::steady_clock::now();
         auto t2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "    Коэффициент: " << cof.get_coefficient() << ", время rgbToGray " << t1 << " ms, "
+        std::cout << "    Коэффициент: " << k << ", время rgbToGray " << t1 << " ms, "
                   << "время корреляции: " << t2 << " ms" << std::endl;
     }
 }
@@ -91,8 +92,8 @@ void correlationTimeTest() {
             Mat X(l);
             Mat Y(r);
             auto start = std::chrono::steady_clock::now();
-            correlation::coefficient_Pearson cof(X, Y);
-            corr.push_back(cof.get_coefficient());
+            correlation::coefficient_Pearson cof;
+            corr.push_back(cof.get_coefficient(X, Y));
             auto end = std::chrono::steady_clock::now();
             std::cout << "    Время корреляции(" << X.getCols() <<"x" << X.getRows() << "): "
                       << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
