@@ -17,7 +17,7 @@ SVN=17  # Версия cpp
 all: clean $(TARGET)
 
 $(TARGET): # -Wall -Wextra -Werror -ansi
-	$(CC) -Wall -Wextra -Werror -ansi -std=c++$(SVN) -lm -o $(TARGET) $(addprefix -I,$(HDRS)) $(CFLAGS) $(SRCS) $(LIBS)
+	$(CC) -Wall -Wextra -Werror -ansi -O3 -std=c++$(SVN) -lm -o $(TARGET) $(addprefix -I,$(HDRS)) $(CFLAGS) $(SRCS) $(LIBS)
 
 build: $(TARGET)
 
