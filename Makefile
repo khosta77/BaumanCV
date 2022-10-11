@@ -3,7 +3,6 @@ CC=g++
 SRCS=\
 	./project/src/main.cpp \
     ./project/include/Mat.h \
-    ./project/include/SMatrix.h \
     ./project/include/test.h \
     ./project/src/test.cpp \
     ./project/include/correlation.h
