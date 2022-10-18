@@ -6,8 +6,7 @@ SRCS=\
     ./project/include/test.h \
     ./project/include/rangefinder.h \
     ./project/src/test.cpp \
-    ./project/include/correlation.h \
-    ./project/src/rangefinder.cpp
+    ./project/include/correlation.h
 LIBS=\
     -lwiringPi \
     -ljpeg
