@@ -1,14 +1,10 @@
-//
-// Created by stepan on 10/18/22.
-//
-
-#ifndef CVRANGEFINDER_RANGEFINDER_H
-#define CVRANGEFINDER_RANGEFINDER_H
+#ifndef CVRANGEFINDER_RANGEFINDER_H_
+#define CVRANGEFINDER_RANGEFINDER_H_
 
 
-class rangefinder{
+class rangefinder {
 
 };
 
 
-#endif //CVRANGEFINDER_RANGEFINDER_H
+#endif // CVRANGEFINDER_RANGEFINDER_H_
