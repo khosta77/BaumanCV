@@ -9,24 +9,18 @@
 namespace correlation {
 
     class coefficient_Pearson {
-    private:
-        float Rm;
-        float Rn;
-        float Rmn;
-        float Rm_;
-        float Rn_;
-
     public:
-        coefficient_Pearson() : Rm(0), Rn(0), Rmn(0), Rm_(0), Rn_(0) {}
+        coefficient_Pearson() = default;
 
         /** \get_coefficient - Возращает коэффицент Пирсона
          * */
-        inline float get_coefficient(const Mat &A, const Mat &B) noexcept {
+        inline float Pearson(const Mat &A, const Mat &B) noexcept {
+            float Rm = 0, Rn = 0, Rmn = 0, Rm_ = 0, Rn_ = 0;
             arithmetic_mean(Rm_, A);
             arithmetic_mean(Rn_, B);
             mean_square_deviation(A, Rm_, Rm);
             mean_square_deviation(B, Rn_, Rn);
-            mean_square_deviation(A, B);
+            mean_square_deviation(A, B, Rmn, Rm_, Rn_);
             return Rmn / (Rm * Rn);
         }
 
@@ -69,7 +63,7 @@ namespace correlation {
 
         /** \mean_square_deviation - вычисляет числитель из формулы Пирсона
          * */
-        inline void mean_square_deviation(const Mat &M, const Mat &N) noexcept {
+        inline void mean_square_deviation(const Mat &M, const Mat &N, float &Rmn, const float &Rm_,  const float &Rn_) noexcept {
             for (size_t i = 0; i < M.size() - 10; i+=10) {
                 Rmn += ((M[i] - Rm_) * (N[i] - Rn_));
                 Rmn += ((M[i + 1] - Rm_) * (N[i + 1] - Rn_));
