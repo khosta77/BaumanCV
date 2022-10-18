@@ -4,9 +4,9 @@ SRCS=\
 	./project/src/main.cpp \
     ./project/include/Mat.h \
     ./project/include/test.h \
+    ./project/include/rangefinder.h \
     ./project/src/test.cpp \
     ./project/include/correlation.h \
-    ./project/include/rangefinder.h \
     ./project/src/rangefinder.cpp
 LIBS=\
     -lwiringPi \
