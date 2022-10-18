@@ -1,58 +1,67 @@
 #ifndef CVRANGEFINDER_CV_TWO_ARRAY_H_
 #define CVRANGEFINDER_CV_TWO_ARRAY_H_
 
-#include "SMatrix.h"
 #include <iostream>
 #include <fstream>
 #include <cerrno>
 #include <cstddef>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <setjmp.h>
 #include <cstring>
-#include <stdlib.h>
-#include <unistd.h>
+#include <iomanip>
+#include <cmath>
+#include <limits>
+#include <stdexcept>
+#include <exception>
 
 extern "C" {  // jpeglib.h
+#include <stdio.h>
+#include <setjmp.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <jconfig.h>
 #include <jpeglib.h>
 }
 
-#define GRAY_CHANNEL 1
-#define RGB_CHANNEL 3
-
-/* Это сейчас пусть будет 0, тк эта библиотека не корректно работает. Вырезать ее тоже не стоит */
-#define RASBERRY 0
-#ifdef RASBERRY
-#include <raspicam/raspicam.h>
-#endif
-
 typedef unsigned char uchar;
 
-
-class Mat : public sstd::SMatrix<uchar> {
+class Mat {
 private:
-    std::string filename;  /* Куда будет сохронятся картинка */
-    int _channels;  /* По уолчанию картинка конвертируется в GRAY, но в будущем возможно использовать и RGB */
+    size_t rows;      /* Строки */
+    size_t cols;      /* Колонки */
+    uchar *matrix;   /* Основной массив - он же матрица, т.к. двумерный */
 
-    /** \brief - метод переводит RGB изображение в серый
-     * \R - красный
-     * \G - зеленный
-     * \B - синий
-     * */
-     inline uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
-        return  uchar(R * float(0.299) + G * float(0.587) + B * float(0.114));
+    static inline uchar get_grey(const uchar &R, const uchar &G, const uchar &B) {
+        return  uchar(float(R) * float(0.299) + float(G) * float(0.587) + float(B) * float(0.114));
     }
 public:
-    /** \brief - Простой конструктор
-     * */
-    Mat() {}
+    explicit Mat(const size_t &cols = 0, const size_t &rows = 0) : rows(rows), cols(cols) {
+        matrix = new uchar[rows * cols]{};
+    }
 
-    /** \brief - считывает из файла картинку и переводит ее в GRAY
-     * \param filename - .jpg файл
-     * */
-    Mat(const std::string &filename) {
+    Mat(const Mat& arr) {
+        rows = arr.getRows();
+        cols = arr.getCols();
+        matrix = new uchar [rows * cols]{};
+        for (size_t i = 0; i < (rows * cols); ++i) {
+            matrix[i] = arr.matrix[i];
+        }
+    }
+
+    Mat& operator=(const Mat& arr) {
+        if (&arr != this) {
+            delete[] this->matrix;
+            rows = arr.getRows();
+            cols = arr.getCols();
+            matrix = new uchar[rows * cols]{};
+            for (size_t i = 0; i < (rows * cols); ++i) {
+                matrix[i] = arr.matrix[i];
+            }
+        }
+        return *this;
+    }
+
+    explicit Mat(const std::string &filename) {
         struct jpeg_decompress_struct d1;
         struct jpeg_error_mgr m1;
         d1.err = jpeg_std_error(&m1);
@@ -64,9 +73,6 @@ public:
         rows = d1.image_height;
         cols = d1.image_width;
         matrix = new uchar[rows * cols]{};
-        this->filename = "test.jpg";
-        this->_channels = GRAY_CHANNEL;
-
 
         jpeg_start_decompress(&d1);
         uchar *pBuf = new uchar[rows * cols * d1.num_components]{};
@@ -86,45 +92,12 @@ public:
         delete[] pBuf;
     }
 
-#ifdef RASBERRY
-    /** \brief - конструктор который делает снимок и переводит его в GRAY
-     * НЕ РАБОТАЕТ, он не понятно что фотографирует
-     * \param Camera - камера, raspicam
-     * */
-    Mat(raspicam::RaspiCam Camera) {
-        Camera.setFormat(raspicam::RASPICAM_FORMAT_BGR);
-        Camera.open();
-        usleep(3);
-        Camera.grab();
-        this->_channels = GRAY_CHANNEL;
-        uchar *data = new uchar[Camera.getImageTypeSize(raspicam::RASPICAM_FORMAT_RGB)];
-        Camera.retrieve(data);
-        rows = Camera.getHeight();
-        cols = Camera.getWidth();
-        matrix = new uchar[rows * cols]{};
-        for (size_t i = 0; i < rows; i++) {
-            for (size_t j = 0; j < cols; j++) {
-                matrix[j + i * cols] = get_grey(float(data[j + i * cols  + 2]),
-                                                float(data[j + i * cols  + 1]),
-                                                float(data[j + i * cols  + 0]));
-            }
-        }
-        delete [] data;
-    }
-#endif
-
-    /** \brief - деструктор
-     * */
     ~Mat() {
-        filename.clear();
+        delete[] matrix;
     }
 
-    /** \brief - сохраняет GRAY картинку.
-     * */
-    void write() {
-        if (filename.empty()) {
-            throw sstd::se::_without_file();
-        }
+    void write(const std::string &filename) {
+
         struct jpeg_compress_struct cinfo;  /* Шаг 1: выделите и инициализируйте объект сжатия JPEG */
         struct jpeg_error_mgr jerr;
         JSAMPROW row_pointer[1];
@@ -136,10 +109,10 @@ public:
         jpeg_stdio_dest(&cinfo, outfile); /* Шаг 3: установите параметры для сжатия */
         cinfo.image_width = cols;    /* Количество столбцов в изображении */
         cinfo.image_height = rows;   /* Количество строк в изображении */
-        cinfo.input_components = this->_channels > 1 ? 3 : 1;     // Каналы, RGB 3 ; GRAY 1
-        cinfo.in_color_space = this->_channels > 1 ? JCS_RGB : JCS_GRAYSCALE;
-        JSAMPLE* image_buffer = new JSAMPLE[cols * rows * _channels]();  /* Указывает на большой массив данных R, G, B-порядка */
-        for (size_t i = 0; i < cols * rows; i++) {
+        cinfo.input_components = 1;     // Каналы, RGB 3 ; GRAY 1
+        cinfo.in_color_space = J_COLOR_SPACE(1);
+        JSAMPLE* image_buffer = new JSAMPLE[cols * rows]();  /* Указывает на большой массив данных R, G, B-порядка */
+        for (size_t i = 0; i < cols * rows; ++i) {
             image_buffer[i] = matrix[i];
         }
         jpeg_set_defaults(&cinfo);
@@ -148,7 +121,7 @@ public:
         jpeg_start_compress(&cinfo, true);  /* Шаг 4: Запустите компрессор */
 
         while (cinfo.next_scanline < cinfo.image_height) {  /* Шаг 5: пока (строки сканирования еще предстоит записать)*/
-            row_pointer[0] = (JSAMPROW)&image_buffer[cinfo.next_scanline * cols * _channels];
+            row_pointer[0] = (JSAMPROW)&image_buffer[cinfo.next_scanline * cols];
             (void)jpeg_write_scanlines(&cinfo, row_pointer, 1);
         }
 
@@ -156,17 +129,37 @@ public:
         jpeg_destroy_compress(&cinfo);  /* Шаг 7: освободите объект сжатия JPEG */
         fclose(outfile);
     }
+//------------------------------------------------------------------------------------------------------------
+    // Basic operations
+    [[nodiscard]] inline size_t getRows() const noexcept {  return rows; }
+    [[nodiscard]] inline size_t getCols() const noexcept {  return cols; }
+    [[nodiscard]] inline size_t size() const noexcept {  return rows * cols; }
 
-    /** \brief - сохраняет GRAY картинку по названию.
-     * \param file - имя файла
-     * */
-    void write(const std::string &file) {
-        filename = file;
-        write();
+    uchar& operator()(const size_t &i, const size_t &j) const {
+        return matrix[j + i * cols];
     }
 
-    inline size_t size() const noexcept {
-        return rows * cols;
+    uchar& operator()(const size_t &i, const size_t &j) {
+        return (uchar&)matrix[j + i * cols];
+    }
+
+    uchar& operator[](const size_t &k) noexcept { return matrix[k]; }
+    uchar& operator[](const size_t &k) const noexcept { return matrix[k]; }
+
+//------------------------------------------------------------------------------------------------------------
+    void resize(const size_t &rows = 0, const size_t &cols = 0) {
+        delete[] matrix;
+        this->rows = rows;
+        this->cols = cols;
+        matrix = new uchar[rows * cols]{};
+    }
+
+    Mat submatrix(const size_t &ly, const size_t &ry, const size_t &lx, const size_t &rx) {
+        Mat subM(rx - lx, ry - ly);
+        for (size_t y = ly, iy = 0; y < ry; ++y, ++iy)
+            for(size_t x = lx, ix = 0; x < rx; ++x, ++ix)
+                subM.matrix[ix + iy * subM.cols] = this->matrix[x + y * cols];
+        return subM;
     }
 };
 
