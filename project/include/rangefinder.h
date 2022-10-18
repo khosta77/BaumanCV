@@ -18,7 +18,7 @@ class rangefinder {
     std::vector<std::string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 public:
     rangefinder() = default;
-    float distance(const std::string &directory_ds) {
+    double distance(const std::string &directory_ds) {
         calculateCorrelation(directory_ds);
         size_t id = getId(correlation, *min_element(std::begin(correlation), std::end(correlation)));
         auto image_correlation = find_all_correlation(directory_ds, id);
@@ -58,7 +58,7 @@ private:
                                           (r.getCols() / 2 - BLOCK_SIZE / 2),
                                           (r.getCols() / 2 + BLOCK_SIZE / 2));
         std::vector<double> image_correlation;
-        for (size_t i = l.getCols() / BLOCK_SIZE; i > 0; --i) {
+        for (size_t i = (l.getCols() / BLOCK_SIZE); i > 0; --i) {
             Mat l_control_block = l.submatrix((l.getRows() / 2 - BLOCK_SIZE / 2),
                                               (l.getRows() / 2 + BLOCK_SIZE / 2),
                                               ((l.getCols() - (i * BLOCK_SIZE))),
