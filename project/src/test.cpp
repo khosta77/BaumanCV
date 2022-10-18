@@ -38,6 +38,10 @@ void runTest(int argc, const char **argv) {
             break;
         }
 #endif
+        case DISTANSE: {
+            printDistance();
+            break;
+        }
         default: {
             cout << "Тест не распознан!" << endl;
         }
@@ -71,6 +75,9 @@ int getTestCode(const std::string& cmd) {
         return SNAPSHOT_TIME_TO_GRAY;
     }
 #endif
+    if (cmd == "distance") {
+        return DISTANSE;
+    }
     return 0;
 }
 
@@ -164,4 +171,16 @@ void snapshotTimeToGray() {
 }
 #endif
 
+void printDistance() {
+    for (size_t i = 0; i < TEST_PERIOD; ++i) {
+        auto start = std::chrono::steady_clock::now();
+        rangefinder rf;
+        auto dist = rf.distance("./Image/DataSet/");
+        auto end = std::chrono::steady_clock::now();
+        cout << "    Расстояние до объекта: " << dist << " [мм]; ";
+        std::cout << "Время расчета: "
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+                  << " ms" << std::endl;
+    }
+}
 

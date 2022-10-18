@@ -3,6 +3,7 @@
 
 #include "Mat.h"
 #include "correlation.h"
+#include "rangefinder.h"
 #include "wiringPi.h"
 #include <fstream>
 #include <iostream>
@@ -24,6 +25,8 @@
 #define SNAPSHOT_TIME_TO_GRAY 8
 #endif
 
+#define DISTANSE 9
+
 #define TEST_PERIOD 20  /* Колличество тестов в 1 цикле */
 
 void runTest(int argc, const char **argv);
@@ -40,5 +43,7 @@ void rgbToGrayTest();
 void snapshotTimeTest();
 void snapshotTimeToGray();
 #endif
+
+void printDistance();
 
 #endif // CVRANGEFINDER_TEST_H_
