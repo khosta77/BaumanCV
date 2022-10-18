@@ -1,5 +1,5 @@
-#ifndef CVRANGEFINDER_UTILS_H_
-#define CVRANGEFINDER_UTILS_H_
+#ifndef CVRANGEFINDER_TEST_H_
+#define CVRANGEFINDER_TEST_H_
 
 #include "Mat.h"
 #include "correlation.h"
@@ -26,6 +26,7 @@
 
 #define TEST_PERIOD 20  /* Колличество тестов в 1 цикле */
 
+void runTest(int argc, const char **argv);
 int getTestCode(const std::string&);
 
 void identicalPhotosTest();
@@ -40,4 +41,4 @@ void snapshotTimeTest();
 void snapshotTimeToGray();
 #endif
 
-#endif // CVRANGEFINDER_UTILS_H_
+#endif // CVRANGEFINDER_TEST_H_
