@@ -85,7 +85,7 @@ static void outKT(const std::string &l, const std::string &r) {
         auto t1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         start = std::chrono::steady_clock::now();
         correlation::coefficient_Pearson cof;
-        float k = cof.get_coefficient(X, Y);
+        float k = cof.Pearson(X, Y);
         end = std::chrono::steady_clock::now();
         auto t2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         std::cout << "    Коэффициент: " << k << ", время rgbToGray " << t1 << " ms, "
@@ -105,37 +105,37 @@ static void outRGBtoGRAY(const std::string &fn) {
 }
 
 void identicalPhotosTest() {
-    outKT("./test_img/test_1.jpg", "./test_img/test_1.jpg");
+    outKT("./Image/test_img/test_1.jpg", "./Image/test_img/test_1.jpg");
 }
 
 void defferentPhotosTest() {
-    outKT("./test_img/test_1.jpg", "./test_img/test_2.jpg");
+    outKT("./Image/test_img/test_1.jpg", "./Image/test_img/test_2.jpg");
 }
 
 void defferentAngelsTest() {
-    outKT("./test_img/test_3_1_1.jpg", "./test_img/test_3_1_2.jpg");
-    outKT("./test_img/test_3_2_1.jpg", "./test_img/test_3_2_2.jpg");
+    outKT("./Image/test_img/test_3_1_1.jpg", "./Image/test_img/test_3_1_2.jpg");
+    outKT("./Image/test_img/test_3_2_1.jpg", "./Image/test_img/test_3_2_2.jpg");
 }
 
 void blurTest() {
-    outKT("./test_img/test_4_1_1.jpg", "./test_img/test_4_1_2.jpg");
-    outKT("./test_img/test_4_2_1.jpg", "./test_img/test_4_2_2.jpg");
-    outKT("./test_img/test_4_3_1.jpg", "./test_img/test_4_3_2.jpg");
+    outKT("./Image/test_img/test_4_1_1.jpg", "./Image/test_img/test_4_1_2.jpg");
+    outKT("./Image/test_img/test_4_2_1.jpg", "./Image/test_img/test_4_2_2.jpg");
+    outKT("./Image/test_img/test_4_3_1.jpg", "./Image/test_img/test_4_3_2.jpg");
 }
 
 void correlationTimeTest() {
     std::vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
     std::vector<double> corr;
     for (size_t i = 0; i < tst_jpg.size() - 1; i += 2) {
-        std::string l = ("./img/" + tst_jpg[i] + ".jpg");
-        std::string r = ("./img/" + tst_jpg[i + 1] + ".jpg");
+        std::string l = ("./Image/img/" + tst_jpg[i] + ".jpg");
+        std::string r = ("./Image/img/" + tst_jpg[i + 1] + ".jpg");
         std::cout << "  Пара: " << i << "-" << (i + 1) << std::endl;
         for (size_t j = 0; j < TEST_PERIOD; ++j) {
             Mat X(l);
             Mat Y(r);
             auto start = std::chrono::steady_clock::now();
             correlation::coefficient_Pearson cof;
-            corr.push_back(cof.get_coefficient(X, Y));
+            corr.push_back(cof.Pearson(X, Y));
             auto end = std::chrono::steady_clock::now();
             std::cout << "    Время корреляции(" << X.getCols() <<"x" << X.getRows() << "): "
                       << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
@@ -146,12 +146,12 @@ void correlationTimeTest() {
 }
 
 void rgbToGrayTest() {
-    outRGBtoGRAY("./test_img/test_1.jpg");
-    outRGBtoGRAY("./test_img/test_2.jpg");
-    outRGBtoGRAY("./test_img/test_3_1_1.jpg");
-    outRGBtoGRAY("./test_img/test_3_1_2.jpg");
-    outRGBtoGRAY("./test_img/test_3_2_1.jpg");
-    outRGBtoGRAY("./test_img/test_3_2_2.jpg");
+    outRGBtoGRAY("./Image/test_img/test_1.jpg");
+    outRGBtoGRAY("./Image/test_img/test_2.jpg");
+    outRGBtoGRAY("./Image/test_img/test_3_1_1.jpg");
+    outRGBtoGRAY("./Image/test_img/test_3_1_2.jpg");
+    outRGBtoGRAY("./Image/test_img/test_3_2_1.jpg");
+    outRGBtoGRAY("./Image/test_img/test_3_2_2.jpg");
 }
 
 #ifdef CAMERA_TEST
