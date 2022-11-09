@@ -2,22 +2,20 @@ TARGET=./main
 CC=g++
 SRCS=\
 	./project/src/main.cpp \
-    ./project/include/Mat.h \
-    ./project/include/test.h \
-    ./project/include/rangefinder.h \
-    ./project/src/test.cpp \
-    ./project/include/correlation.h
+    ./project/src/test.cpp
 LIBS=\
-    -lwiringPi \
-    -ljpeg
+    -ljpeg # Добавить  -lmmal -lmmal_core -lmmal_util, если не будет работать
 
-# добавить еще -lmmal -lmmal_core -lmmal_util , если не будет работать
-SVN=17  # Версия cpp
+# На mac OS он не подтягивает автоматически библиотеки надо прямо путь указать
+JPEGLIB=-I /opt/homebrew/Cellar/jpeg-turbo/2.1.4/include -L /opt/homebrew/Cellar/jpeg-turbo/2.1.4/lib
+
+STD=-std=c++17
+WER=-Wall -Wextra -Werror -ansi
 
 all: clean $(TARGET)
 
-$(TARGET): # -Wall -Wextra -Werror -ansi
-	$(CC) -Wall -Wextra -Werror -ansi -O3 -std=c++$(SVN) -lm -o $(TARGET) $(addprefix -I,$(HDRS)) $(CFLAGS) $(SRCS) $(LIBS)
+$(TARGET): 
+	$(CC) $(WER) -O3 $(STD) $(JPEGLIB) $(LIBS) -lm -o $(TARGET) $(SRCS)
 
 build: $(TARGET)
 
