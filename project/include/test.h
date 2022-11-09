@@ -4,7 +4,6 @@
 #include "Mat.h"
 #include "correlation.h"
 #include "rangefinder.h"
-#include "wiringPi.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -29,7 +28,7 @@
 
 #define TEST_PERIOD 20  /* Колличество тестов в 1 цикле */
 
-void runTest(int argc, const char **argv);
+void runTest(int, const char**);
 int getTestCode(const std::string&);
 
 void identicalPhotosTest();
