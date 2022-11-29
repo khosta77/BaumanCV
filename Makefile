@@ -14,8 +14,13 @@ WER=-Wall -Wextra -Werror -ansi
 
 all: clean $(TARGET)
 
-$(TARGET): 
+apple: clean m 
+
+m:
 	$(CC) $(WER) -O3 $(STD) $(JPEGLIB) $(LIBS) -lm -o $(TARGET) $(SRCS)
+
+$(TARGET): 
+	$(CC) $(WER) -O3 $(STD) $(LIBS) -lm -o $(TARGET) $(SRCS)
 
 build: $(TARGET)
 
