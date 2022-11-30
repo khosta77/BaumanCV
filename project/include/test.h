@@ -154,11 +154,13 @@ class MyTest {
     static size_t TEST_COUNT = 10;
 public:
     MyTest() = default;
+    ~MyTest() = default;
 
     static void add(const std::string tn, const void (*tfPtr)()) {
         tests_methods.push_back(test_obj(tn, tfPtr));
     }
 
+    // TODO: радикольно уменьшить размер этой функции, вынеся ее куски в отдельные методы 
     static void make() {
         time_t now = time(0);
         char* start = ctime(&now);
@@ -181,7 +183,11 @@ public:
             results.push_back(tr);
         }
         char* end = ctime(&now);
-        
+        // TODO: написать алгоритм который определит максимальное имя и порядок размеров, для таблицы
+
+        // TODO: написать вывод таблицы
+
+        // TODO: написать сохранение тестовых данных в csv файл
     }
 };
 
