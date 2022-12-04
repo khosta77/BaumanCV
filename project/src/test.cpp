@@ -1,186 +1,96 @@
 #include "../include/test.h"
 
-using namespace std;
+void test_time() {
+    MyTest::add("RGBtGRAY_1200×800_v1", [](){  Mat m("./Image/test_img/test_1.jpg"); });
+    MyTest::add("RGBtGRAY_1200×800_v2", [](){  Mat m("./Image/test_img/test_2.jpg"); });
+    MyTest::add("RGBtGRAY_960×1280_v1", [](){  Mat m("./Image/test_img/test_3_1_1.jpg"); });
+    MyTest::add("RGBtGRAY_960×1280_v2", [](){  Mat m("./Image/test_img/test_3_1_2.jpg"); });
+    MyTest::add("RGBtGRAY_960×1280_v3", [](){  Mat m("./Image/test_img/test_3_2_1.jpg"); });
+    MyTest::add("RGBtGRAY_960×1280_v4", [](){  Mat m("./Image/test_img/test_3_2_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v1.1", [](){  Mat m("./Image/DataSet/ph_1_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v1.2", [](){  Mat m("./Image/DataSet/ph_1_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v2.1", [](){  Mat m("./Image/DataSet/ph_2_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v2.2", [](){  Mat m("./Image/DataSet/ph_2_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v3.1", [](){  Mat m("./Image/DataSet/ph_3_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v3.2", [](){  Mat m("./Image/DataSet/ph_3_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v4.1", [](){  Mat m("./Image/DataSet/ph_4_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v4.2", [](){  Mat m("./Image/DataSet/ph_4_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v5.1", [](){  Mat m("./Image/DataSet/ph_5_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v5.2", [](){  Mat m("./Image/DataSet/ph_5_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v6.1", [](){  Mat m("./Image/DataSet/ph_6_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v6.2", [](){  Mat m("./Image/DataSet/ph_6_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v8.1", [](){  Mat m("./Image/DataSet/ph_8_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v8.2", [](){  Mat m("./Image/DataSet/ph_8_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v9.1", [](){  Mat m("./Image/DataSet/ph_9_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v9.2", [](){  Mat m("./Image/DataSet/ph_9_2.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v10.1", [](){  Mat m("./Image/DataSet/ph_10_1.jpg"); });
+    MyTest::add("RGBtGRAY_2592×1944_v10.2", [](){  Mat m("./Image/DataSet/ph_10_2.jpg"); });
+    MyTest::make();
+}
 
-void runTest(int argc, const char **argv) {
-    if (argc != 2)
-        return;
-    switch (getTestCode(string(argv[1]))) {
-        case IDENTICAL_PHOTOS: {
-            identicalPhotosTest();
-            break;
+// private
+void MyTest::draw_line(const int& id, const int& n) {
+    std::cout << std::setfill('-') << std::setw(id) << "" << "+"
+              << std::setfill('-') << std::setw(n) << "" << "+"
+              << std::setfill('-') << std::setw(9) << "" << "+"
+              << std::setfill('-') << std::setw(9) << "" << "+"
+              << std::setfill('-') << std::setw(9) << "" << "+" << std::endl;
+}
+
+// public
+void MyTest::add(const std::string& tn, func tfPtr) {
+    tests_methods.push_back(test_obj(tn, tfPtr));
+}
+
+// TODO: радикольно уменьшить размер этой функции, вынеся ее куски в отдельные методы
+void MyTest::make() {
+    time_t now = time(0);
+    [[ maybe_unused ]] char* start = ctime(&now);
+    for (size_t i = 0; i < tests_methods.size(); ++i) { // вот это сбросить в метод отдельный
+        double startTime, endTime;
+        test_result tr;
+        for (size_t j = 0; j < TEST_COUNT; ++j) {  // вот это в отдельный метод
+            startTime = getCPUTime();
+            tests_methods[i].foo_ptr();
+            endTime = getCPUTime();
+            tr.all_value.push_back((endTime - startTime));
         }
-        case DEFFERENT_PHOTOS: {
-            defferentPhotosTest();
-            break;
-        }
-        case DEFFERENT_ANGLES: {
-            defferentAngelsTest();
-            break;
-        }
-        case BLUR: {
-            blurTest();
-            break;
-        }
-        case CORRELATION_TIME: {
-            correlationTimeTest();
-            break;
-        }
-        case RGB_TO_GRAY: {
-            rgbToGrayTest();
-            break;
-        }
-#ifdef CAMERA_TEST
-        case SNAPSHOT_TIME: {
-            break;
-        }
-        case SNAPSHOT_TIME_TO_GRAY: {
-            break;
-        }
-#endif
-        case DISTANSE: {
-            printDistance();
-            break;
-        }
-        default: {
-            cout << "Тест не распознан!" << endl;
-        }
+        tr.average_value = tr.all_value[0];
+        for (size_t j = 1; j < tr.all_value.size(); ++j)  // в отдельный методд
+            tr.average_value += tr.all_value[j];
+        tr.average_value /= tr.all_value.size();
+        tr.min_value = *std::min_element(tr.all_value.begin(), tr.all_value.end());
+        tr.max_value = *std::max_element(tr.all_value.begin(), tr.all_value.end());
+        tr.name = tests_methods[i].name;
+        results.push_back(tr);
     }
+    [[ maybe_unused ]]char* end = ctime(&now);
+
+    // TODO: написать алгоритм который определит максимальное имя и порядок размеров, для таблицы
+    int size_string = 0;
+    for (size_t i = 0; i < results.size(); ++i)
+        if (size_string < int(results[i].name.size()))
+            size_string = results[i].name.size();
+    int size_id = 0;
+    for (int i = results.size(); i > 0; i /= 10 )
+        ++size_id;
+
+    // TODO: написать вывод таблицы
+    std::cout << std::setw(size_id) << std::left << "N" << "|"
+              << std::setw(size_string) << std::left << "name" << "|"
+              << std::setw(9)/* << std::setprecision(3)*/<< std::left << "avg" << "|"
+              << std::setw(9) << std::left << "min" << "|"
+              << std::setw(9) << std::left << "max" << "|" << std::endl;
+    draw_line(size_id, size_string);
+    for (size_t i = 0; i < results.size(); ++i) {
+        std::cout << std::setw(size_id) << i << "|"
+                  << std::setw(size_string) << std::left << results[i].name << "|"
+                  << std::setw(9) << std::setprecision(3) << results[i].average_value << "|"
+                  << std::setw(9) << std::setprecision(3) << results[i].min_value << "|"
+                  << std::setw(9) << std::setprecision(3) << results[i].max_value << "|" << std::endl;
+        draw_line(size_id, size_string);
+    }
+    // TODO: написать сохранение тестовых данных в csv файл
 }
 
-int getTestCode(const std::string& cmd) {
-    if (cmd == "identicalPhotos") {
-        return IDENTICAL_PHOTOS;
-    }
-    if (cmd == "defferentPhotos") {
-        return DEFFERENT_PHOTOS;
-    }
-    if (cmd == "defferentAngels") {
-        return DEFFERENT_ANGLES;
-    }
-    if (cmd == "blur") {
-        return BLUR;
-    }
-    if (cmd == "correlation") {
-        return CORRELATION_TIME;
-    }
-    if (cmd == "RGBtoGRAY") {
-        return RGB_TO_GRAY;
-    }
-#ifdef CAMERA_TEST
-    if (cmd == "snapshot_time") {
-        return SNAPSHOT_TIME;
-    }
-    if (cmd == "snapshot_time_to_gray") {
-        return SNAPSHOT_TIME_TO_GRAY;
-    }
-#endif
-    if (cmd == "distance") {
-        return DISTANSE;
-    }
-    return 0;
-}
-
-static void outKT(const std::string &l, const std::string &r) {
-    Mat Z(l);
-    cout << "  Размер фото: " << Z.getCols() << "x" << Z.getRows() << endl;
-    for (size_t i = 0; i < TEST_PERIOD; ++i) {
-        auto start = std::chrono::steady_clock::now();
-        Mat X(l);
-        Mat Y(r);
-        auto end = std::chrono::steady_clock::now();
-        auto t1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        start = std::chrono::steady_clock::now();
-        correlation::coefficient_Pearson cof;
-        float k = cof.Pearson(X, Y);
-        end = std::chrono::steady_clock::now();
-        auto t2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "    Коэффициент: " << k << ", время rgbToGray " << t1 << " ms, "
-                  << "время корреляции: " << t2 << " ms" << std::endl;
-    }
-}
-
-static void outRGBtoGRAY(const std::string &fn) {
-    std::cout << "  " << fn << std::endl;
-    for (size_t i = 0; i < TEST_PERIOD; ++i) {
-        auto start = std::chrono::steady_clock::now();
-        Mat X(fn);
-        auto end = std::chrono::steady_clock::now();
-        auto t = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "    Фото(" << X.getCols() << "x" << X.getRows() << ") время RGBtoGRAY: " << t << " ms" << std::endl;
-    }
-}
-
-void identicalPhotosTest() {
-    outKT("./Image/test_img/test_1.jpg", "./Image/test_img/test_1.jpg");
-}
-
-void defferentPhotosTest() {
-    outKT("./Image/test_img/test_1.jpg", "./Image/test_img/test_2.jpg");
-}
-
-void defferentAngelsTest() {
-    outKT("./Image/test_img/test_3_1_1.jpg", "./Image/test_img/test_3_1_2.jpg");
-    outKT("./Image/test_img/test_3_2_1.jpg", "./Image/test_img/test_3_2_2.jpg");
-}
-
-void blurTest() {
-    outKT("./Image/test_img/test_4_1_1.jpg", "./Image/test_img/test_4_1_2.jpg");
-    outKT("./Image/test_img/test_4_2_1.jpg", "./Image/test_img/test_4_2_2.jpg");
-    outKT("./Image/test_img/test_4_3_1.jpg", "./Image/test_img/test_4_3_2.jpg");
-}
-
-void correlationTimeTest() {
-    std::vector<string> tst_jpg = {"1" , "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    std::vector<double> corr;
-    for (size_t i = 0; i < tst_jpg.size() - 1; i += 2) {
-        std::string l = ("./Image/img/" + tst_jpg[i] + ".jpg");
-        std::string r = ("./Image/img/" + tst_jpg[i + 1] + ".jpg");
-        std::cout << "  Пара: " << i << "-" << (i + 1) << std::endl;
-        for (size_t j = 0; j < TEST_PERIOD; ++j) {
-            Mat X(l);
-            Mat Y(r);
-            auto start = std::chrono::steady_clock::now();
-            correlation::coefficient_Pearson cof;
-            corr.push_back(cof.Pearson(X, Y));
-            auto end = std::chrono::steady_clock::now();
-            std::cout << "    Время корреляции(" << X.getCols() <<"x" << X.getRows() << "): "
-                      << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-                      << " ms" << std::endl;
-        }
-    }
-    corr.clear();
-}
-
-void rgbToGrayTest() {
-    outRGBtoGRAY("./Image/test_img/test_1.jpg");
-    outRGBtoGRAY("./Image/test_img/test_2.jpg");
-    outRGBtoGRAY("./Image/test_img/test_3_1_1.jpg");
-    outRGBtoGRAY("./Image/test_img/test_3_1_2.jpg");
-    outRGBtoGRAY("./Image/test_img/test_3_2_1.jpg");
-    outRGBtoGRAY("./Image/test_img/test_3_2_2.jpg");
-}
-
-#ifdef CAMERA_TEST
-void snapshotTimeTest() {
-     // TODO: тест снимков разных рамзеров
-}
-
-void snapshotTimeToGray() {
-    // TODO: ??? , тк снимки будут анализироватся после того как будет получен весь массив, то одновременное время бесполезно
-}
-#endif
-
-void printDistance() {
-    for (size_t i = 0; i < TEST_PERIOD; ++i) {
-        auto start = std::chrono::steady_clock::now();
-        rangefinder rf;
-        auto dist = rf.distance("./Image/DataSet/");
-        auto end = std::chrono::steady_clock::now();
-        cout << "    Расстояние до объекта: " << dist << " [мм]; ";
-        std::cout << "Время расчета: "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-                  << " ms" << std::endl;
-    }
-}
 

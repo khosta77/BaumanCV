@@ -3,8 +3,8 @@
 
 using namespace std;
 
-int main( int argc, const char **argv) {
-    runTest(argc, argv);
+int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] const char **argv) {
+    test_time();
     return 0;
 }
 
