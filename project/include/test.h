@@ -4,6 +4,7 @@
 #include "Mat.h"
 #include "correlation.h"
 #include "rangefinder.h"
+#include "CPUTime.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -11,42 +12,42 @@
 #include <chrono>
 #include <algorithm>
 #include <iomanip>
-#include "CPUTime.h"
 
+struct test_obj {
+    std::string name;
+    double (*foo)();
+
+    test_obj(const std::string& n, double (*f)()) : name(n), foo(f) {} 
+};
+
+struct test_result {
+    std::string name;
+    double average_value;
+    double min_value;
+    double max_value;
+    std::vector<double> all_value;
+};
 
 class MyTest {
-    typedef void (*func)();
+    std::vector<test_result> results;  // Результаты тестов
+    std::vector<test_obj> tests_methods;  // Переменная в которой хранится вектор тестов
 
-    struct test_obj {
-        std::string name;
-        func foo_ptr;
+    const size_t TEST_COUNT = 10;
+    const int SIZE_COLOMN = 10;
+    const int ROUND = 10000;
 
-        test_obj(const std::string& n, func fPtr) : name(n), foo_ptr(fPtr) {} 
-    };
-
-    struct test_result {
-        std::string name;
-        double average_value;
-        double min_value;
-        double max_value;
-        std::vector<double> all_value;
-    };
-
-    static std::vector<test_result> results;  // Результаты тестов
-    static std::vector<test_obj> tests_methods;  // Переменная в которой хранится вектор тестов
-
-    static const size_t TEST_COUNT = 10;
-
-    static void draw_line(const int& id, const int& n);
+    void draw_line(const int& id, const int& n);
+    double round(const double& value);
 public:
     MyTest() = default;
     ~MyTest() = default;
 
-    static void add(const std::string& tn, func tfPtr);
+    void add(const std::string& tn, double (*f)());
 
     // TODO: радикольно уменьшить размер этой функции, вынеся ее куски в отдельные методы 
-    static void make();
+    void make();
 };
+
 
 void test_time();
 
