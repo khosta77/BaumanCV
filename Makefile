@@ -2,7 +2,8 @@ TARGET=./main
 CC=g++
 SRCS=\
 	./project/src/main.cpp \
-    ./project/src/test.cpp
+    ./project/src/test.cpp \
+	./project/src/CPUTime.cpp
 LIBS=\
     -ljpeg # Добавить  -lmmal -lmmal_core -lmmal_util, если не будет работать
 
