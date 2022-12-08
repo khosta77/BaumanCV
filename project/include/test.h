@@ -12,6 +12,10 @@
 #include <chrono>
 #include <algorithm>
 #include <iomanip>
+#include <unistd.h>
+#include <ctime>
+#include <chrono>
+
 
 struct test_obj {
     std::string name;
@@ -32,7 +36,7 @@ class MyTest {
     std::vector<test_result> results;  // Результаты тестов
     std::vector<test_obj> tests_methods;  // Переменная в которой хранится вектор тестов
 
-    const size_t TEST_COUNT = 10;
+    const size_t TEST_COUNT = 10;  // 10 - для проверки, при тестировании полноценном 100, или выше
     const int SIZE_COLOMN = 10;
     const int ROUND = 10000;
 

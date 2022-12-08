@@ -27,10 +27,19 @@ void test_time() {
     mt.add("RGBtGRAY_2592x1944_v9.2", [](){  Mat m("./Image/DataSet/ph_9_2.jpg"); return double(0); });
     mt.add("RGBtGRAY_2592x1944_v10.1", [](){  Mat m("./Image/DataSet/ph_10_1.jpg"); return double(0); });
     mt.add("RGBtGRAY_2592x1944_v10.2", [](){  Mat m("./Image/DataSet/ph_10_2.jpg"); return double(0); });
-    mt.add("correlation_2592x1944", []() {  
+    mt.add("RGBtGRAY_960x1280_v1", [](){  Mat m("./Image/img/1.jpg"); return double(0); });
+    mt.add("correlation_2592x1944_v10", []() {  
             double start = getCPUTime();
             Mat A("./Image/DataSet/ph_10_1.jpg");
             Mat B("./Image/DataSet/ph_10_2.jpg");
+            double end = getCPUTime();
+            correlation::coefficient_Pearson cor;
+            cor.Pearson(A, B);
+            return (end - start); });
+    mt.add("correlation_960x1280_v1", []() {
+            double start = getCPUTime();
+            Mat A("./Image/img/1.jpg");
+            Mat B("./Image/img/2.jpg");
             double end = getCPUTime();
             correlation::coefficient_Pearson cor;
             cor.Pearson(A, B);
@@ -59,8 +68,14 @@ void MyTest::add(const std::string& tn, double (*f)()) {
 // TODO: радикольно уменьшить размер этой функции, вынеся ее куски в отдельные методы
 void MyTest::make() {
     std::cout << "Test size: " << TEST_COUNT << std::endl;
-    time_t now = time(0);
-    [[ maybe_unused ]] char* start = ctime(&now);
+    time_t t;
+    struct tm *tm_p;
+    int start_h, start_m, start_s;
+    t = time(NULL);
+    tm_p = localtime(&t);
+    start_h  = tm_p->tm_hour;
+    start_m = tm_p->tm_min;
+    start_s = tm_p->tm_sec;
     for (size_t i = 0; i < tests_methods.size(); ++i) { // вот это сбросить в метод отдельный
         double startTime, endTime, inaccuracy;
         test_result tr;
@@ -79,7 +94,9 @@ void MyTest::make() {
         tr.name = tests_methods[i].name;
         results.push_back(tr);
     }
-    [[ maybe_unused ]]char* end = ctime(&now);
+    sleep(30);
+    t = time(NULL);
+    tm_p = localtime(&t);
 
     // TODO: написать алгоритм который определит максимальное имя и порядок размеров, для таблицы
     int size_string = 0;
@@ -106,8 +123,8 @@ void MyTest::make() {
         // draw_line(size_id, size_string);
     }
     draw_line(size_id, size_string);
-    std::cout << "S: " << start;
-    std::cout << "E: " << end;
+    std::cout << "Start program at: " << start_h << ":" << start_m << ":" << start_s << std::endl;
+    std::cout << "End program at:   " << tm_p->tm_hour << ":" << tm_p->tm_min << ":" << tm_p->tm_sec << std::endl;
     // TODO: написать сохранение тестовых данных в csv файл
 }
 
