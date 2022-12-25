@@ -48,84 +48,60 @@ void test_time() {
 }
 
 // private
-void MyTest::draw_line(const int& id, const int& n) {
-    std::cout << std::setfill('-') << std::setw(id) << "" << "+"
-              << std::setw(n) << "" << "+"
-              << std::setw(SIZE_COLOMN) << "" << "+"
-              << std::setw(SIZE_COLOMN) << "" << "+"
-              << std::setw(SIZE_COLOMN) << "" << "+" << std::setfill(' ') << std::endl;
+void MyTest::draw_line(std::ostream& os) {
+    os << std::setfill('-') << std::setw(size_id) << "" << "+"
+       << std::setw(size_string) << "" << "+"
+       << std::setw(SIZE_COLOMN) << "" << "+"
+       << std::setw(SIZE_COLOMN) << "" << "+"
+       << std::setw(SIZE_COLOMN) << "" << "+" << std::setfill(' ') << std::endl;
 }
 
 double MyTest::round(const double& v) {
     return std::round(v * ROUND) / ROUND;
 }
 
-// public
-void MyTest::add(const std::string& tn, double (*f)()) {
-    tests_methods.push_back(test_obj(tn, f));
-}
-
-// TODO: радикольно уменьшить размер этой функции, вынеся ее куски в отдельные методы
-void MyTest::make() {
-    std::cout << "Test size: " << TEST_COUNT << std::endl;
-    time_t t;
-    struct tm *tm_p;
-    int start_h, start_m, start_s;
-    t = time(NULL);
-    tm_p = localtime(&t);
-    start_h  = tm_p->tm_hour;
-    start_m = tm_p->tm_min;
-    start_s = tm_p->tm_sec;
-    for (size_t i = 0; i < tests_methods.size(); ++i) { // вот это сбросить в метод отдельный
-        double startTime, endTime, inaccuracy;
-        test_result tr;
-        for (size_t j = 0; j < TEST_COUNT; ++j) {  // вот это в отдельный метод
+//// Методы для проведения теста
+void MyTest::makeOneTestMethod(const size_t& i, test_result& tr, double& startTime,
+                               double& endTime, double& inaccuracy) {
+        for (size_t j = 0; j < TEST_COUNT; ++j) {
             startTime = getCPUTime();
             inaccuracy = tests_methods[i].foo();
             endTime = getCPUTime();
             tr.all_value.push_back((endTime - startTime - inaccuracy));
         }
-        tr.average_value = tr.all_value[0];
-        for (size_t j = 1; j < tr.all_value.size(); ++j)  // в отдельный методд
-            tr.average_value += tr.all_value[j];
-        tr.average_value /= tr.all_value.size();
-        tr.min_value = *std::min_element(tr.all_value.begin(), tr.all_value.end());
-        tr.max_value = *std::max_element(tr.all_value.begin(), tr.all_value.end());
+}
+
+void MyTest::oneTestMethod(const size_t& i, test_result& tr, double& startTime, double& endTime,
+                           double& inaccuracy) {
+        makeOneTestMethod(i, tr, startTime, endTime, inaccuracy);
+        tr.M2a();
         tr.name = tests_methods[i].name;
         results.push_back(tr);
-    }
-    sleep(30);
-    t = time(NULL);
-    tm_p = localtime(&t);
+        tr.clear(); 
+} 
 
-    // TODO: написать алгоритм который определит максимальное имя и порядок размеров, для таблицы
-    int size_string = 0;
-    for (size_t i = 0; i < results.size(); ++i)
-        if (size_string < int(results[i].name.size()))
-            size_string = results[i].name.size();
-    int size_id = 0;
-    for (int i = results.size(); i > 0; i /= 10 )
-        ++size_id;
+void MyTest::makeTest() {
+    double startTime, endTime, inaccuracy;
+    test_result tr;
+    for (size_t i = 0; i < tests_methods.size(); ++i)
+        oneTestMethod(i, tr, startTime, endTime, inaccuracy);
+}
+////
 
-    // TODO: написать вывод таблицы
-    std::cout << std::setw(size_id) << std::left << "N" << "|"
-              << std::setw(size_string) << std::left << "name" << "|"
-              << std::setw(SIZE_COLOMN) << std::left << "avg, [sec]" << "|"
-              << std::setw(SIZE_COLOMN) << std::left << "min, [sec]" << "|"
-              << std::setw(SIZE_COLOMN) << std::left << "max, [sec]" << "|" << std::endl;
-    draw_line(size_id, size_string);
-    for (size_t i = 0; i < results.size(); ++i) {
-        std::cout << std::setw(size_id) << std::right << (i + 1) << "|"
-                  << std::setw(size_string) << std::left << results[i].name << "|"
-                  << std::setw(SIZE_COLOMN) << std::right << round(results[i].average_value) << "|"
-                  << std::setw(SIZE_COLOMN) << round(results[i].min_value) << "|"
-                  << std::setw(SIZE_COLOMN) << round(results[i].max_value) << "|" << std::endl;
-        // draw_line(size_id, size_string);
-    }
-    draw_line(size_id, size_string);
-    std::cout << "Start program at: " << start_h << ":" << start_m << ":" << start_s << std::endl;
-    std::cout << "End program at:   " << tm_p->tm_hour << ":" << tm_p->tm_min << ":" << tm_p->tm_sec << std::endl;
-    // TODO: написать сохранение тестовых данных в csv файл
+// public
+void MyTest::add(const std::string& tn, double (*f)()) {
+    tests_methods.push_back(test_obj(tn, f));
+}
+
+void MyTest::make() {
+    std::cout << "Test size: " << TEST_COUNT << std::endl;
+    start.getSystemTime();
+    makeTest();
+    end.getSystemTime();
+    output(std::cout);
+    std::cout << "Start program at: " << start << std::endl;
+    std::cout << "End program at:   " << end << std::endl;
+    // Т.к. проект будет законсервирован, то было решено не делать запись в файл.
 }
 
 
