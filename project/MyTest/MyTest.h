@@ -18,7 +18,7 @@ class MyTest {
     std::vector<test_result> results;  // Результаты тестов
     std::vector<test_obj> tests_methods;  // Переменная в которой хранится вектор тестов
 
-    const size_t TEST_COUNT = 10;  // 10 - для проверки, при тестировании полноценном 100, или выше
+    const size_t TEST_COUNT = 20;  // 10 - для проверки, при тестировании полноценном 100, или выше
     const int SIZE_COLOMN = 10;  // размер колнки, с числом
     const int ROUND = 10000;  // Округление до десятитысячных
 
