@@ -7,75 +7,75 @@
 
 
 namespace correlation {
+
     class coefficient_Pearson {
     public:
-        /** \coefficient_Pearson - Конструктор, вычисляет коэффицент Пирсона
-         * \M - матрица с картинкой1
-         * \N - матрица с картинкой2
-         * */
-        coefficient_Pearson(const Mat &M, const Mat &N) {
-            if ((M.getCols() != N.getCols()) && (M.getRows() != N.getRows())) {
-                throw std::exception();
-            }
-            float Rm = mean_square_deviation(M, arithmetic_mean(M));
-            float Rn = mean_square_deviation(N, arithmetic_mean(N));
-            float Rmn = mean_square_deviation(M, arithmetic_mean(M), N, arithmetic_mean(N));
-            r = (Rmn / (Rm * Rn));
-        }
+        coefficient_Pearson() = default;
 
         /** \get_coefficient - Возращает коэффицент Пирсона
          * */
-        float get_coefficient() {
-            return r;
+        inline float Pearson(const Mat &A, const Mat &B) noexcept {
+            float Rm = 0, Rn = 0, Rmn = 0, Rm_ = 0, Rn_ = 0;
+            arithmetic_mean(Rm_, A);
+            arithmetic_mean(Rn_, B);
+            mean_square_deviation(A, Rm_, Rm);
+            mean_square_deviation(B, Rn_, Rn);
+            mean_square_deviation(A, B, Rmn, Rm_, Rn_);
+            return Rmn / (Rm * Rn);
         }
 
     private:
-        float r = 0;  // Коэффициент Пирсона
-
          /** \arithmetic_mean - возращает среднее значение
-          * \M - матрица с картинкой
-          * \return - среднее значение суммы всех ячеейк деленное на общее их колличество
           * */
-         float arithmetic_mean(const Mat &M) {
-             float m_ = 0;
-             for (size_t i = 0; i < M.getRows(); i++) {
-                 for (size_t j = 0; j < M.getCols(); j++) {
-                     m_ += M(i, j);
-                 }
+         inline void arithmetic_mean(float &m_, const Mat &M) const noexcept {
+             for (size_t i = 0; i < M.size() - 10; i+=10) { // Все размеры снимков кратны 10
+                 m_ += M[i];
+                 m_ += M[i + 1];
+                 m_ += M[i + 2];
+                 m_ += M[i + 3];
+                 m_ += M[i + 4];
+                 m_ += M[i + 5];
+                 m_ += M[i + 6];
+                 m_ += M[i + 7];
+                 m_ += M[i + 8];
+                 m_ += M[i + 9];
              }
-             return (m_ / (M.getRows() * M.getCols()));
+             m_ /= M.size();
          }
 
         /** \mean_square_deviation - один из знаминателей в формуле Пирсона
-         * \M - матрица с картинкой
-         * \m_ - Среднее арифметическое
-         * \return - один из знаминателей в формуле Пирсона
          * */
-        float mean_square_deviation(const Mat &M, cfloat m_) {
-            float Rm = 0;
-            for (size_t i = 0; i < M.getRows(); i++) {
-                for (size_t j = 0; j < M.getCols(); j++) {
-                    Rm += std::pow((M(i, j) - m_), 2);
-                }
+        void mean_square_deviation(const Mat &M, const float &m_, float &Rm) const noexcept {
+            for (size_t i = 0; i < M.size() - 10; i+=10) {
+                Rm += ((M[i] - m_) * (M[i] - m_));
+                Rm += ((M[i + 1] - m_) * (M[i + 1] - m_));
+                Rm += ((M[i + 2] - m_) * (M[i + 2] - m_));
+                Rm += ((M[i + 3] - m_) * (M[i + 3] - m_));
+                Rm += ((M[i + 4] - m_) * (M[i + 4] - m_));
+                Rm += ((M[i + 5] - m_) * (M[i + 5] - m_));
+                Rm += ((M[i + 6] - m_) * (M[i + 6] - m_));
+                Rm += ((M[i + 7] - m_) * (M[i + 7] - m_));
+                Rm += ((M[i + 8] - m_) * (M[i + 8] - m_));
+                Rm += ((M[i + 9] - m_) * (M[i + 9] - m_));
             }
-            return std::sqrt(Rm);
+            Rm = std::sqrt(Rm);
         }
 
         /** \mean_square_deviation - вычисляет числитель из формулы Пирсона
-         * \M - матрица с картинкой1
-         * \m_ - Среднее арифметическое1
-         * \N - матрица с картинкой2
-         * \n_ - Среднее арифметическое2
-         * \return - числитель из формулы Пирсона
          * */
-        float mean_square_deviation(const Mat &M, cfloat m_, const Mat &N, cfloat n_) {
-            float Rmn = 0;
-            for (size_t i = 0; i < M.getRows(); i++) {
-                for (size_t j = 0; j < M.getCols(); j++) {
-                    Rmn += ((M(i, j) - m_) * (N(i, j) - n_));
-                }
+        inline void mean_square_deviation(const Mat &M, const Mat &N, float &Rmn, const float &Rm_,  const float &Rn_) noexcept {
+            for (size_t i = 0; i < M.size() - 10; i+=10) {
+                Rmn += ((M[i] - Rm_) * (N[i] - Rn_));
+                Rmn += ((M[i + 1] - Rm_) * (N[i + 1] - Rn_));
+                Rmn += ((M[i + 2] - Rm_) * (N[i + 2] - Rn_));
+                Rmn += ((M[i + 3] - Rm_) * (N[i + 3] - Rn_));
+                Rmn += ((M[i + 4] - Rm_) * (N[i + 4] - Rn_));
+                Rmn += ((M[i + 5] - Rm_) * (M[i + 5] - Rn_));
+                Rmn += ((M[i + 6] - Rm_) * (M[i + 6] - Rn_));
+                Rmn += ((M[i + 7] - Rm_) * (M[i + 7] - Rn_));
+                Rmn += ((M[i + 8] - Rm_) * (M[i + 8] - Rn_));
+                Rmn += ((M[i + 9] - Rm_) * (M[i + 9] - Rn_));
             }
-            return Rmn;
         }
     };
 };
